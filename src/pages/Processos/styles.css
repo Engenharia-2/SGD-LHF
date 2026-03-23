@@ -1,0 +1,20 @@
+.processos-container h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.content-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.placeholder-content {
+  margin-top: 2rem;
+  padding: 3rem;
+  border: 2px dashed #dcdde1;
+  border-radius: 8px;
+  color: #7f8c8d;
+  text-align: center;
+}
