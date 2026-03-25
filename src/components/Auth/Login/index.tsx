@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import './styles.css';
+import { useNotification } from '../../../hooks/useNotification';
+import Notification from '../../Layout/Notification';
+import { useAuth } from '../../../contexts/AuthContext';
 
 interface LoginProps {
-  onLogin: (userData: any) => void;
+  onLogin?: (userData: any) => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Login: React.FC<LoginProps> = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +16,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [role, setRole] = useState('Funcionario');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const { login } = useAuth();
+  const {
+    notification,
+    showNotification,
+    hideNotification
+  } = useNotification();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,15 +48,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       }
 
       if (isRegistering) {
-        alert('Conta criada com sucesso! Faça login.');
+        showNotification('Conta criada com sucesso! Faça login.', 'success');
         setIsRegistering(false);
         setPassword('');
       } else {
-        localStorage.setItem('sgd_token', data.token);
-        onLogin(data.user);
+        login(data.user, data.token);
       }
     } catch (err: any) {
       setError(err.message);
+      showNotification(err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -138,6 +148,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </button>
         </div>
       </div>
+
+      {notification && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type} 
+          onClose={hideNotification} 
+        />
+      )}
     </div>
   );
 };

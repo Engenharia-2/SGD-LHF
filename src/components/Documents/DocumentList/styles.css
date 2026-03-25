@@ -1,0 +1,79 @@
+.document-list-container {
+  background: var(--bg-card);
+  color: var(--text-main);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.document-list-container h3 {
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
+}
+
+.document-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.placeholder-content {
+  margin-top: 1rem;
+  padding: 3rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-align: center;
+  background-color: var(--bg-main);
+}
+
+/* Modal Reuse (Simplified for Edit) */
+.edit-document-form {
+  padding: 1.5rem;
+}
+
+.edit-document-form .form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-document-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-document-form .form-row .form-group {
+  flex: 1;
+}
+
+.edit-document-form label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.edit-document-form input, .edit-document-form select {
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.modal-header .btn-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7f8c8d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.modal-header .btn-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-read);
+}

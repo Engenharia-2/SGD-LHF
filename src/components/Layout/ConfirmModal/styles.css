@@ -1,0 +1,59 @@
+.confirm-overlay {
+  z-index: 11000;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  pointer-events: all;
+}
+
+.confirm-modal {
+  max-width: 400px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  animation: confirmScaleIn 0.2s ease-out;
+}
+
+@keyframes confirmScaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.confirm-modal.danger .icon { color: #e74c3c; }
+.confirm-modal.warning .icon { color: #f39c12; }
+.confirm-modal.info .icon { color: var(--accent-color); }
+
+.title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.confirm-body {
+  padding: 1.5rem;
+  color: var(--text-main);
+  line-height: 1.5;
+  background-color: var(--bg-card);
+}
+
+.confirm-footer {
+  padding: 1rem 1.5rem;
+  background-color: var(--bg-main);
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-confirm {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.btn-danger { background-color: #e74c3c; }
+.btn-warning { background-color: #f39c12; }
+.btn-info { background-color: #3498db; }
+
+.btn-confirm:hover {
+  opacity: 0.9;
+}

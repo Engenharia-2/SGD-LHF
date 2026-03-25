@@ -1,20 +1,23 @@
 .gestao-container h2 {
-  color: #2c3e50;
+  color: var(--text-main);
   margin-bottom: 1.5rem;
 }
 
 .content-card {
-  background: white;
+  background: var(--bg-card);
+  color: var(--text-main);
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
 }
 
 .placeholder-content {
   margin-top: 2rem;
   padding: 3rem;
-  border: 2px dashed #dcdde1;
+  border: 2px dashed var(--border-color);
   border-radius: 8px;
-  color: #7f8c8d;
+  color: var(--text-muted);
   text-align: center;
+  background-color: var(--bg-main);
 }

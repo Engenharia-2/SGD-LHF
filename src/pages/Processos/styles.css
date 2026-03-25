@@ -1,20 +1,23 @@
 .processos-container h2 {
-  color: #2c3e50;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
 }
 
-.content-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.placeholder-content {
-  margin-top: 2rem;
-  padding: 3rem;
-  border: 2px dashed #dcdde1;
-  border-radius: 8px;
-  color: #7f8c8d;
-  text-align: center;
+.view-mode-badge {
+  font-size: 0.75rem;
+  background-color: var(--color-laranja);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow);
 }

@@ -1,24 +1,21 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Login from './components/Login'
-import Sidebar from './components/Sidebar'
+import Login from './components/Auth/Login'
+import Sidebar from './components/Layout/Sidebar'
+import Header from './components/Layout/Header'
 import Dashboard from './pages/Dashboard'
 import Processos from './pages/Processos'
 import Gestao from './pages/Gestao'
 import Geral from './pages/Geral'
 import Admin from './pages/Admin'
+import { useAuth } from './contexts/AuthContext'
 import './App.css'
 
 function App() {
-  const [user, setUser] = useState<any>(null);
+  const { user, logout, isLoading } = useAuth();
   const [pingResponse, setPingResponse] = useState<string>('Esperando...')
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('sgd_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-
     if (window.electronAPI && window.electronAPI.ping) {
       window.electronAPI.ping().then((response) => {
         setPingResponse(response)
@@ -26,19 +23,12 @@ function App() {
     }
   }, [])
 
-  const handleLogin = (userData: any) => {
-    setUser(userData);
-    localStorage.setItem('sgd_user', JSON.stringify(userData));
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('sgd_user');
-    localStorage.removeItem('sgd_token');
-  };
+  if (isLoading) {
+    return <div className="loading-screen">Carregando Sistema...</div>;
+  }
 
   if (!user) {
-    return <Login onLogin={handleLogin} />;
+    return <Login onLogin={() => {}} />; // onLogin será removido do componente Login depois
   }
 
   const isAdminOrManager = user.role === 'Administrador' || user.role === 'Gestor';
@@ -49,12 +39,7 @@ function App() {
         <Sidebar user={user} />
         
         <div className="main-container">
-          <header className="app-header">
-            <div className="user-info">
-              <span>Olá, <strong>{user.username}</strong> ({user.sector} - {user.role})</span>
-              <button onClick={handleLogout} className="btn-logout">Sair</button>
-            </div>
-          </header>
+          <Header user={user} onLogout={logout} />
 
           <main className="content-area">
             <Routes>
@@ -79,4 +64,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

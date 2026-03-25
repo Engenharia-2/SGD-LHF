@@ -1,0 +1,143 @@
+.document-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+  background-color: var(--bg-card);
+}
+
+.document-item:hover {
+  background-color: var(--bg-main);
+}
+
+.doc-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.doc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.doc-title {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 1.1rem;
+}
+
+.doc-status {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-revisão { 
+  background-color: rgba(229, 62, 62, 0.1); 
+  color: #e53e3e; 
+  border: 1px solid rgba(229, 62, 62, 0.2); 
+}
+
+.status-aprovado { 
+  background-color: rgba(56, 161, 105, 0.1); 
+  color: #38a169; 
+  border: 1px solid rgba(56, 161, 105, 0.2); 
+}
+
+.status-obsoleto { 
+  background-color: rgba(74, 85, 104, 0.1); 
+  color: #4a5568; 
+  border: 1px solid rgba(74, 85, 104, 0.2); 
+}
+
+.version-selector {
+  margin-left: 4px;
+}
+
+.version-selector select {
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  background-color: var(--bg-main);
+  color: var(--accent-color);
+  border: 1px solid var(--border-color);
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.version-selector select:hover {
+  border-color: var(--accent-color);
+  background-color: var(--bg-card);
+}
+
+.doc-meta {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  margin-bottom: 4px;
+  opacity: 0.9;
+}
+
+.doc-sub-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.old-version-warning {
+  color: var(--color-laranja);
+  font-weight: 700;
+}
+
+.doc-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.btn-view { color: var(--accent-color); }
+.btn-view:hover { 
+  background-color: var(--accent-color); 
+  color: white; 
+  border-color: var(--accent-color);
+}
+
+.btn-edit { color: #f39c12; }
+.btn-edit:hover { 
+  background-color: #f39c12; 
+  color: white;
+  border-color: #f39c12;
+}
+
+.btn-delete { color: #d73a49; }
+.btn-delete:hover { 
+  background-color: #d73a49; 
+  color: white;
+  border-color: #d73a49;
+}

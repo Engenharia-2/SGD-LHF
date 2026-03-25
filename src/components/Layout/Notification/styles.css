@@ -1,0 +1,60 @@
+.notification-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  min-width: 300px;
+  max-width: 450px;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10000;
+  animation: slideInRight 0.3s ease-out;
+  border-left: 5px solid;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.notification-container.success { border-color: #2ecc71; }
+.notification-container.error { border-color: #e74c3c; }
+.notification-container.info { border-color: #3498db; }
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-content .icon {
+  flex-shrink: 0;
+}
+
+.success .icon { color: #2ecc71; }
+.error .icon { color: #e74c3c; }
+.info .icon { color: #3498db; }
+
+.message {
+  color: #2c3e50;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.btn-close-notif {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  transition: color 0.2s;
+}
+
+.btn-close-notif:hover {
+  color: #2c3e50;
+}

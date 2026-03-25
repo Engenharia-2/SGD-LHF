@@ -1,15 +1,18 @@
 .dashboard-container {
   display: flex;
   flex-direction: column;
+  color: var(--text-main);
 }
 
 .status-card {
-  background-color: white;
+  background-color: var(--bg-card);
+  color: var(--text-main);
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 2rem;
   text-align: left;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
 }
 
 .status {
@@ -19,8 +22,8 @@
 }
 
 .status.success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: rgba(46, 164, 79, 0.2);
+  color: #2ea44f;
 }
 
 .modules-grid {
@@ -30,9 +33,11 @@
 }
 
 .module-card {
-  background: white;
+  background: var(--bg-card);
+  color: var(--text-main);
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow);
   text-align: left;
+  border: 1px solid var(--border-color);
 }

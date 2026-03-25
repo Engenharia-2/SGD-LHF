@@ -1,5 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { LayoutDashboard, FileText, Settings, Users, ShieldCheck } from 'lucide-react';
+import { useTheme } from '../../../contexts/ThemeContext';
 import './styles.css';
 
 interface SidebarProps {
@@ -8,38 +10,48 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const isAdminOrManager = user?.role === 'Administrador' || user?.role === 'Gestor';
+  const { theme } = useTheme();
 
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <h2>SGD-LHF</h2>
+        <img 
+          src={theme === 'light' ? '/logotipo2.png' : '/logotipo3.png'} 
+          alt="SGD-LHF Logo" 
+          className="sidebar-logo" 
+        />
       </div>
       <nav className="sidebar-nav">
         <ul>
           <li>
             <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>
-              Dashboard
+              <LayoutDashboard size={20} />
+              <span>Dashboard</span>
             </NavLink>
           </li>
           <li>
             <NavLink to="/processos" className={({ isActive }) => (isActive ? 'active' : '')}>
-              Processos
+              <FileText size={20} />
+              <span>Processos</span>
             </NavLink>
           </li>
           <li>
             <NavLink to="/gestao" className={({ isActive }) => (isActive ? 'active' : '')}>
-              Gestão
+              <Settings size={20} />
+              <span>Gestão</span>
             </NavLink>
           </li>
           <li>
             <NavLink to="/geral" className={({ isActive }) => (isActive ? 'active' : '')}>
-              Geral
+              <Users size={20} />
+              <span>Geral</span>
             </NavLink>
           </li>
           {isAdminOrManager && (
             <li>
               <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : '')}>
-                Admin
+                <ShieldCheck size={20} />
+                <span>Admin</span>
               </NavLink>
             </li>
           )}
