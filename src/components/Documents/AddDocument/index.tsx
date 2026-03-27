@@ -1,10 +1,9 @@
 import React from 'react';
 import './styles.css';
-import type { Document } from '../../../hooks/useDocuments';
+import type { Document } from '../../../types';
 import { useAddDocument } from '../../../hooks/useAddDocument';
 import type { DocumentCategory } from '../../../hooks/useAddDocument';
-import { useNotification } from '../../../hooks/useNotification';
-import Notification from '../../Layout/Notification';
+import { useAlert } from '../../../contexts/AlertContext';
 
 interface AddDocumentProps {
   onDocumentAdded?: (newDoc: Document) => void;
@@ -19,10 +18,8 @@ interface AddDocumentProps {
 
 const AddDocument: React.FC<AddDocumentProps> = ({ onDocumentAdded, user, category }) => {
   const {
-    notification,
-    showNotification,
-    hideNotification
-  } = useNotification();
+    showAlert,
+  } = useAlert();
 
   const {
     formState,
@@ -47,9 +44,9 @@ const AddDocument: React.FC<AddDocumentProps> = ({ onDocumentAdded, user, catego
     e.preventDefault();
     try {
       await upload();
-      showNotification('Documento adicionado com sucesso!', 'success');
+      showAlert('Documento adicionado com sucesso!', 'success');
     } catch (err) {
-      showNotification('Erro ao adicionar documento.', 'error');
+      showAlert('Erro ao adicionar documento.', 'error');
     }
   };
 
@@ -174,14 +171,6 @@ const AddDocument: React.FC<AddDocumentProps> = ({ onDocumentAdded, user, catego
             </form>
           </div>
         </div>
-      )}
-
-      {notification && (
-        <Notification 
-          message={notification.message} 
-          type={notification.type} 
-          onClose={hideNotification} 
-        />
       )}
     </div>
   );

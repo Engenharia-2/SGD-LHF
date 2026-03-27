@@ -5,7 +5,7 @@ import DocumentFilter from '../../components/Documents/DocumentFilter';
 import { useDocuments } from '../../hooks/useDocuments';
 import { useDocumentFilter } from '../../hooks/useDocumentFilter';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Document } from '../../hooks/useDocuments';
+import type { Document } from '../../types';
 import './styles.css';
 
 const Processos: React.FC = () => {
@@ -16,7 +16,8 @@ const Processos: React.FC = () => {
     fetchDocuments, 
     addDocument, 
     updateDocument,
-    deleteDocument 
+    deleteDocument,
+    toggleFavorite
   } = useDocuments(activeSector, 'PROCESSOS');
 
   // Utilizando o hook de filtragem abstraído
@@ -68,6 +69,7 @@ const Processos: React.FC = () => {
         }
         onDelete={deleteDocument}
         onUpdate={updateDocument}
+        onToggleFavorite={toggleFavorite}
       />
     </div>
   );

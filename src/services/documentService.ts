@@ -1,6 +1,6 @@
-import type { Document } from '../hooks/useDocuments';
+import type { Document } from '../types';
 
-const API_URL = 'http://localhost:3003';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const getHeaders = (isMultipart = false) => {
   const token = localStorage.getItem('sgd_token');
@@ -62,5 +62,45 @@ export const documentService = {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Erro ao atualizar documento.');
     }
+  },
+
+  async updateStatus(id: number, status: string): Promise<void> {
+    const response = await fetch(`${API_URL}/documents/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('sgd_token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Erro ao atualizar status do documento.');
+    }
+  },
+
+  async favorite(id: number): Promise<void> {
+    const response = await fetch(`${API_URL}/documents/${id}/favorite`, {
+      method: 'POST',
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Erro ao favoritar documento');
+  },
+
+  async unfavorite(id: number): Promise<void> {
+    const response = await fetch(`${API_URL}/documents/${id}/favorite`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Erro ao remover favorito');
+  },
+
+  async listFavorites(): Promise<Document[]> {
+    const response = await fetch(`${API_URL}/documents/favorites`, {
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Erro ao buscar favoritos');
+    return response.json();
   }
 };

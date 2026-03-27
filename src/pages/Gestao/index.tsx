@@ -1,36 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import AddDocument from '../../components/Documents/AddDocument';
 import DocumentList from '../../components/Documents/DocumentList';
 import DocumentFilter from '../../components/Documents/DocumentFilter';
 import { useDocuments } from '../../hooks/useDocuments';
 import { useDocumentFilter } from '../../hooks/useDocumentFilter';
-import type { Document } from '../../hooks/useDocuments';
+import { useAuth } from '../../contexts/AuthContext';
+import type { Document } from '../../types';
 import './styles.css';
 
-interface User {
-  id: number;
-  username: string;
-  sector: string;
-  role: string;
-}
-
 const Gestao: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('sgd_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
+  const { user, activeSector, canModify } = useAuth();
 
   const { 
     documents, 
     fetchDocuments, 
     addDocument, 
     updateDocument,
-    deleteDocument 
-  } = useDocuments(user, 'GESTAO');
+    deleteDocument,
+    toggleFavorite
+  } = useDocuments(activeSector, 'GESTAO');
 
   // Utilizando o hook de filtragem abstraído
   const { 
@@ -40,10 +28,10 @@ const Gestao: React.FC = () => {
   } = useDocumentFilter(documents);
 
   useEffect(() => {
-    if (user) {
+    if (activeSector) {
       fetchDocuments();
     }
-  }, [user, fetchDocuments]);
+  }, [activeSector, fetchDocuments]);
 
   const handleDocumentAdded = (newDoc: Document) => {
     addDocument(newDoc);
@@ -53,27 +41,35 @@ const Gestao: React.FC = () => {
 
   return (
     <div className="gestao-container">
-      <h2>Gestão</h2>
+      <div className="page-header">
+        <h2>Gestão - {activeSector}</h2>
+        {user.sector !== activeSector && (
+          <span className="view-mode-badge">Modo Visualização: {activeSector}</span>
+        )}
+      </div>
 
-      <AddDocument 
-        user={user} 
-        category="GESTAO" 
-        onDocumentAdded={handleDocumentAdded} 
-      />
+      {canModify && (
+        <AddDocument 
+          user={user} 
+          category="GESTAO" 
+          onDocumentAdded={handleDocumentAdded} 
+        />
+      )}
 
       <DocumentFilter onFilter={setActiveFilters} />
 
       <DocumentList 
         documents={filteredDocuments}
         user={user}
-        title="Lista de Gestão" 
+        title={`Lista de Gestão (${activeSector})`}
         emptyMessage={
           hasActiveFilters 
             ? "Nenhum documento corresponde aos filtros aplicados."
-            : `Nenhum documento de gestão encontrado para o setor ${user.sector}.`
+            : `Nenhum documento de gestão encontrado para o setor ${activeSector}.`
         }
         onDelete={deleteDocument}
         onUpdate={updateDocument}
+        onToggleFavorite={toggleFavorite}
       />
     </div>
   );

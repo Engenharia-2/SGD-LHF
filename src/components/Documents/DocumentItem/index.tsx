@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
-import type { Document } from '../../../hooks/useDocuments';
+import { Eye, Pencil, Trash2, Star } from 'lucide-react';
+import type { Document } from '../../../types';
+import { documentService } from '../../../services/documentService';
+import { useAlert } from '../../../contexts/AlertContext';
 import './styles.css';
 
 interface DocumentItemProps {
@@ -9,6 +11,7 @@ interface DocumentItemProps {
   onView: (filename: string) => void;
   onEdit: (doc: Document) => void;
   onDelete: (id: number) => void;
+  onToggleFavorite?: (id: number, currentStatus: boolean) => void;
 }
 
 const DocumentItem: React.FC<DocumentItemProps> = ({ 
@@ -16,21 +19,66 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   canModify, 
   onView, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onToggleFavorite
 }) => {
   const [selectedVersionId, setSelectedVersionId] = useState(doc.id);
+  const [currentStatus, setCurrentStatus] = useState(doc.status || 'Revisão');
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const { showAlert } = useAlert();
   
   // Encontrar os dados da versão selecionada no histórico
   const currentView = doc.history?.find(v => v.id === selectedVersionId) || doc;
 
+  const handleStatusChange = async (newStatus: string) => {
+    if (!canModify) return;
+    
+    setIsUpdatingStatus(true);
+    try {
+      await documentService.updateStatus(doc.id, newStatus);
+      setCurrentStatus(newStatus);
+      showAlert('Status atualizado com sucesso!', 'success');
+    } catch (err: any) {
+      showAlert(err.message, 'error');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   return (
     <li className="document-item">
+      <div className="doc-favorite">
+        <button 
+          className={`btn-icon btn-favorite ${doc.is_favorite ? 'active' : ''}`}
+          onClick={() => onToggleFavorite?.(doc.id, !!doc.is_favorite)}
+          title={doc.is_favorite ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
+        >
+          <Star size={20} fill={doc.is_favorite ? "currentColor" : "none"} />
+        </button>
+      </div>
       <div className="doc-info">
         <div className="doc-title-row">
           <span className="doc-title">{currentView.title}</span>
-          <span className={`doc-status status-${currentView.status?.toLowerCase()}`}>
-            {currentView.status}
-          </span>
+          
+          {canModify && selectedVersionId === doc.id ? (
+            <div className="status-selector-wrapper">
+              <select 
+                className={`doc-status-select status-${currentStatus.toLowerCase()}`}
+                value={currentStatus}
+                onChange={(e) => handleStatusChange(e.target.value)}
+                disabled={isUpdatingStatus}
+                title="Alterar Status do Documento"
+              >
+                <option value="Revisão">Revisão</option>
+                <option value="Aprovado">Aprovado</option>
+                <option value="Obsoleto">Obsoleto</option>
+              </select>
+            </div>
+          ) : (
+            <span className={`doc-status status-${(selectedVersionId === doc.id ? currentStatus : currentView.status || 'revisão').toLowerCase()}`}>
+              {selectedVersionId === doc.id ? currentStatus : currentView.status}
+            </span>
+          )}
           
           {doc.history && doc.history.length > 1 && (
             <div className="version-selector">

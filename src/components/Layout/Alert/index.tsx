@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import './styles.css';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
-export type NotificationType = 'success' | 'error' | 'info';
+export type AlertType = 'success' | 'error' | 'info';
 
-interface NotificationProps {
+interface AlertProps {
   message: string;
-  type: NotificationType;
+  type: AlertType;
   onClose: () => void;
   duration?: number;
 }
 
-const Notification: React.FC<NotificationProps> = ({ 
+const Alert: React.FC<AlertProps> = ({ 
   message, 
   type = 'info', 
   onClose, 
@@ -32,16 +32,16 @@ const Notification: React.FC<NotificationProps> = ({
   };
 
   return (
-    <div className={`notification-container ${type}`}>
-      <div className="notification-content">
+    <div className={`alert-container ${type}`}>
+      <div className="alert-content">
         {icons[type]}
         <span className="message">{message}</span>
       </div>
-      <button className="btn-close-notif" onClick={onClose}>
+      <button className="btn-close-alert" onClick={onClose}>
         <X size={16} />
       </button>
     </div>
   );
 };
 
-export default Notification;
+export default Alert;

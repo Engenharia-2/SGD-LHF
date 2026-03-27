@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import './styles.css';
-import type { Document } from '../../../hooks/useDocuments';
+import type { Document } from '../../../types';
 import { X } from 'lucide-react';
-import { useNotification } from '../../../hooks/useNotification';
-import Notification from '../../Layout/Notification';
+import { useAlert } from '../../../contexts/AlertContext';
 import ConfirmModal from '../../Layout/ConfirmModal';
 import DocumentItem from '../DocumentItem';
 
@@ -16,6 +15,7 @@ interface DocumentListProps {
   emptyMessage?: string;
   onDelete?: (id: number) => void;
   onUpdate?: (id: number, formData: FormData) => Promise<boolean>;
+  onToggleFavorite?: (id: number, currentStatus: boolean) => void;
 }
 
 const DocumentList: React.FC<DocumentListProps> = ({ 
@@ -24,7 +24,8 @@ const DocumentList: React.FC<DocumentListProps> = ({
   title = "Lista de Documentos", 
   emptyMessage = "Nenhum documento encontrado.",
   onDelete,
-  onUpdate
+  onUpdate,
+  onToggleFavorite
 }) => {
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
   const [editForm, setEditForm] = useState<Partial<Document>>({});
@@ -32,26 +33,24 @@ const DocumentList: React.FC<DocumentListProps> = ({
   const [docToDelete, setDocToDelete] = useState<number | null>(null);
 
   const {
-    notification,
-    showNotification,
-    hideNotification
-  } = useNotification();
+    showAlert,
+  } = useAlert();
 
   const canModify = user.role === 'Administrador' || user.role === 'Gestor';
 
   const handleView = (filename: string) => {
     if (!filename) {
-      showNotification("Erro: Nome do arquivo não encontrado.", "error");
+      showAlert("Erro: Nome do arquivo não encontrado.", "error");
       return;
     }
-    const fileUrl = `http://localhost:3003/uploads/${filename}`;
+    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/${filename}`;
     window.open(fileUrl, '_blank');
   };
 
   const handleConfirmDelete = () => {
     if (docToDelete && onDelete) {
       onDelete(docToDelete);
-      showNotification("Documento e todas as suas versões excluídos.", "success");
+      showAlert("Documento e todas as suas versões excluídos.", "success");
       setDocToDelete(null);
     }
   };
@@ -84,10 +83,10 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
       const success = await onUpdate(editingDoc.id, formData);
       if (success) {
-        showNotification('Nova versão criada com sucesso!', 'success');
+        showAlert('Nova versão criada com sucesso!', 'success');
         setEditingDoc(null);
       } else {
-        showNotification('Erro ao criar nova versão.', 'error');
+        showAlert('Erro ao criar nova versão.', 'error');
       }
     }
   };
@@ -109,6 +108,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
               onView={handleView}
               onEdit={handleEditClick}
               onDelete={(id) => setDocToDelete(id)}
+              onToggleFavorite={onToggleFavorite}
             />
           ))}
         </ul>
@@ -217,14 +217,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
         onCancel={() => setDocToDelete(null)}
         confirmText="Excluir"
       />
-
-      {notification && (
-        <Notification 
-          message={notification.message} 
-          type={notification.type} 
-          onClose={hideNotification} 
-        />
-      )}
     </div>
   );
 };

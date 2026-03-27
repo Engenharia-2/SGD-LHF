@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { documentService } from '../services/documentService';
-import type { Document } from './useDocuments';
+import type { Document } from '../types';
 
 interface User {
   username: string;

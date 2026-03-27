@@ -1,4 +1,4 @@
-.notification-container {
+.alert-container {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -21,17 +21,17 @@
   to { transform: translateX(0); opacity: 1; }
 }
 
-.notification-container.success { border-color: #2ecc71; }
-.notification-container.error { border-color: #e74c3c; }
-.notification-container.info { border-color: #3498db; }
+.alert-container.success { border-color: #2ecc71; }
+.alert-container.error { border-color: #e74c3c; }
+.alert-container.info { border-color: #3498db; }
 
-.notification-content {
+.alert-content {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.notification-content .icon {
+.alert-content .icon {
   flex-shrink: 0;
 }
 
@@ -45,7 +45,7 @@
   font-weight: 500;
 }
 
-.btn-close-notif {
+.btn-close-alert {
   background: none;
   border: none;
   color: #95a5a6;
@@ -55,6 +55,6 @@
   transition: color 0.2s;
 }
 
-.btn-close-notif:hover {
+.btn-close-alert:hover {
   color: #2c3e50;
 }

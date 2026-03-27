@@ -1,11 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-export interface User {
-  id: number;
-  username: string;
-  sector: string;
-  role: 'Administrador' | 'Gestor' | 'Funcionario';
-}
+import type { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
@@ -43,9 +37,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    console.log('AuthContext: Executando logout');
     setUser(null);
     localStorage.removeItem('sgd_user');
     localStorage.removeItem('sgd_token');
+    window.location.reload(); // Forçar reload para limpar estados de outros contexts
   };
 
   const changeSector = (sector: string) => {

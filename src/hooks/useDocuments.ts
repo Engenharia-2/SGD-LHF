@@ -1,30 +1,6 @@
 import { useState, useCallback } from 'react';
 import { documentService } from '../services/documentService';
-
-export interface Document {
-  id: number;
-  title: string;
-  filename: string;
-  original_name: string;
-  mimetype: string;
-  size: number;
-  sector: string;
-  category: string;
-  responsible: string;
-  version: string;
-  status: 'Revisão' | 'Aprovado' | 'Obsoleto';
-  creation_date: string;
-  uploaded_at: string;
-  parent_id?: number;
-  history?: Partial<Document>[];
-}
-
-interface User {
-  id: number;
-  username: string;
-  sector: string;
-  role: string;
-}
+import type { Document } from '../types';
 
 export const useDocuments = (sector: string, category: string) => {
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -75,6 +51,24 @@ export const useDocuments = (sector: string, category: string) => {
     }
   };
 
+  const toggleFavorite = async (id: number, currentStatus: boolean) => {
+    try {
+      if (currentStatus) {
+        await documentService.unfavorite(id);
+      } else {
+        await documentService.favorite(id);
+      }
+      setDocuments(prev => prev.map(doc => 
+        doc.id === id ? { ...doc, is_favorite: !currentStatus } : doc
+      ));
+      return true;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erro ao favoritar';
+      setError(message);
+      return false;
+    }
+  };
+
   return {
     documents,
     loading,
@@ -83,5 +77,6 @@ export const useDocuments = (sector: string, category: string) => {
     addDocument,
     updateDocument,
     deleteDocument,
+    toggleFavorite,
   };
 };

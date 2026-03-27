@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './styles.css';
-import { useNotification } from '../../../hooks/useNotification';
-import Notification from '../../../components/Layout/Notification';
+import { useAlert } from '../../../contexts/AlertContext';
 import ConfirmModal from '../../../components/Layout/ConfirmModal';
 
 const AdminList: React.FC = () => {
@@ -11,10 +10,8 @@ const AdminList: React.FC = () => {
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
   const {
-    notification,
-    showNotification,
-    hideNotification
-  } = useNotification();
+    showAlert,
+  } = useAlert();
 
   const getHeaders = () => {
     const token = localStorage.getItem('sgd_token');
@@ -26,7 +23,7 @@ const AdminList: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3003/admin/users', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/users`, {
         headers: getHeaders()
       });
       const data = await response.json();
@@ -34,7 +31,7 @@ const AdminList: React.FC = () => {
       setUsers(data);
     } catch (err: any) {
       setError(err.message);
-      showNotification(err.message, 'error');
+      showAlert(err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -46,39 +43,39 @@ const AdminList: React.FC = () => {
 
   const handleAuthorize = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3003/admin/users/${id}/authorize`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/users/${id}/authorize`, {
         method: 'PATCH',
         headers: getHeaders()
       });
       if (response.ok) {
         setUsers(users.map(u => u.id === id ? { ...u, is_authorized: 1 } : u));
-        showNotification('Usuário autorizado com sucesso!', 'success');
+        showAlert('Usuário autorizado com sucesso!', 'success');
       } else {
         const data = await response.json();
         throw new Error(data.error || 'Erro ao autorizar');
       }
     } catch (err: any) {
-      showNotification(err.message, 'error');
+      showAlert(err.message, 'error');
     }
   };
 
   const handleConfirmDelete = async () => {
     if (!userToDelete) return;
-    
+
     try {
-      const response = await fetch(`http://localhost:3003/admin/users/${userToDelete}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/users/${userToDelete}`, {
         method: 'DELETE',
         headers: getHeaders()
       });
       if (response.ok) {
         setUsers(users.filter(u => u.id !== userToDelete));
-        showNotification('Usuário removido com sucesso.', 'success');
+        showAlert('Usuário removido com sucesso.', 'success');
       } else {
         const data = await response.json();
         throw new Error(data.error || 'Erro ao remover');
       }
     } catch (err: any) {
-      showNotification(err.message, 'error');
+      showAlert(err.message, 'error');
     } finally {
       setUserToDelete(null);
     }
@@ -140,14 +137,6 @@ const AdminList: React.FC = () => {
         onCancel={() => setUserToDelete(null)}
         confirmText="Confirmar"
       />
-
-      {notification && (
-        <Notification 
-          message={notification.message} 
-          type={notification.type} 
-          onClose={hideNotification} 
-        />
-      )}
     </div>
   );
 };

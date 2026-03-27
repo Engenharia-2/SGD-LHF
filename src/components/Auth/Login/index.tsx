@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './styles.css';
-import { useNotification } from '../../../hooks/useNotification';
-import Notification from '../../Layout/Notification';
+import { useAlert } from '../../../contexts/AlertContext';
 import { useAuth } from '../../../contexts/AuthContext';
 
 interface LoginProps {
@@ -19,10 +18,9 @@ const Login: React.FC<LoginProps> = () => {
 
   const { login } = useAuth();
   const {
-    notification,
-    showNotification,
-    hideNotification
-  } = useNotification();
+    showAlert,
+    hideAlert
+  } = useAlert();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +33,7 @@ const Login: React.FC<LoginProps> = () => {
       : { username, password };
 
     try {
-      const response = await fetch(`http://localhost:3003${endpoint}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -48,7 +46,7 @@ const Login: React.FC<LoginProps> = () => {
       }
 
       if (isRegistering) {
-        showNotification('Conta criada com sucesso! Faça login.', 'success');
+        showAlert('Conta criada com sucesso! Faça login.', 'success');
         setIsRegistering(false);
         setPassword('');
       } else {
@@ -56,7 +54,7 @@ const Login: React.FC<LoginProps> = () => {
       }
     } catch (err: any) {
       setError(err.message);
-      showNotification(err.message, 'error');
+      showAlert(err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -148,14 +146,6 @@ const Login: React.FC<LoginProps> = () => {
           </button>
         </div>
       </div>
-
-      {notification && (
-        <Notification 
-          message={notification.message} 
-          type={notification.type} 
-          onClose={hideNotification} 
-        />
-      )}
     </div>
   );
 };
