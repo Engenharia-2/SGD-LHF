@@ -18,8 +18,7 @@ const Login: React.FC<LoginProps> = () => {
 
   const { login } = useAuth();
   const {
-    showAlert,
-    hideAlert
+    showAlert
   } = useAlert();
 
   const handleSubmit = async (e: React.FormEvent) => {

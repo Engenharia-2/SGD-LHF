@@ -6,9 +6,14 @@ import { useAlert } from '../../../contexts/AlertContext';
 import ConfirmModal from '../../Layout/ConfirmModal';
 import DocumentItem from '../DocumentItem';
 
+import DocumentForm from '../DocumentForm';
+
 interface DocumentListProps {
   documents: Document[];
   user: {
+    id: number;
+    username: string;
+    sector: string;
     role: string;
   };
   title?: string;
@@ -28,9 +33,8 @@ const DocumentList: React.FC<DocumentListProps> = ({
   onToggleFavorite
 }) => {
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
-  const [editForm, setEditForm] = useState<Partial<Document>>({});
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [docToDelete, setDocToDelete] = useState<number | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const {
     showAlert,
@@ -57,36 +61,23 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
   const handleEditClick = (doc: Document) => {
     setEditingDoc(doc);
-    setSelectedFile(null);
-    setEditForm({
-      title: doc.title,
-      responsible: doc.responsible,
-      version: doc.version,
-      status: doc.status,
-      creation_date: doc.creation_date ? doc.creation_date.split('T')[0] : ''
-    });
   };
 
-  const handleUpdateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdateSubmit = async (formData: FormData) => {
     if (editingDoc && onUpdate) {
-      const formData = new FormData();
-      formData.append('title', editForm.title || '');
-      formData.append('responsible', editForm.responsible || '');
-      formData.append('version', editForm.version || '');
-      formData.append('status', editForm.status || 'Revisão');
-      formData.append('creation_date', editForm.creation_date || '');
-      
-      if (selectedFile) {
-        formData.append('file', selectedFile);
-      }
-
-      const success = await onUpdate(editingDoc.id, formData);
-      if (success) {
-        showAlert('Nova versão criada com sucesso!', 'success');
-        setEditingDoc(null);
-      } else {
-        showAlert('Erro ao criar nova versão.', 'error');
+      setIsUpdating(true);
+      try {
+        const success = await onUpdate(editingDoc.id, formData);
+        if (success) {
+          showAlert('Nova versão enviada para aprovação!', 'success');
+          setEditingDoc(null);
+        } else {
+          showAlert('Erro ao criar nova versão.', 'error');
+        }
+      } catch (err: any) {
+        showAlert(err.message, 'error');
+      } finally {
+        setIsUpdating(false);
       }
     }
   };
@@ -116,95 +107,21 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
       {editingDoc && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content modal-large">
             <div className="modal-header">
-              <h3>Editar Documento</h3>
+              <h3>Criar Nova Versão - {editingDoc.title}</h3>
               <button className="btn-close" onClick={() => setEditingDoc(null)}>
                 <X size={24} />
               </button>
             </div>
-            <form onSubmit={handleUpdateSubmit} className="edit-document-form">
-              <div className="form-group">
-                <label>Título</label>
-                <input 
-                  type="text" 
-                  value={editForm.title || ''} 
-                  onChange={e => setEditForm({...editForm, title: e.target.value})}
-                  required 
-                />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Responsável</label>
-                  <input 
-                    type="text" 
-                    value={editForm.responsible || ''} 
-                    onChange={e => setEditForm({...editForm, responsible: e.target.value})}
-                    required 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Data</label>
-                  <input 
-                    type="date" 
-                    value={editForm.creation_date || ''} 
-                    onChange={e => setEditForm({...editForm, creation_date: e.target.value})}
-                  />
-                </div>
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Versão</label>
-                  <input 
-                    type="text" 
-                    value={editForm.version || ''} 
-                    onChange={e => setEditForm({...editForm, version: e.target.value})}
-                    required 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Status</label>
-                  <select 
-                    value={editForm.status || 'Revisão'} 
-                    onChange={e => setEditForm({...editForm, status: e.target.value as any})}
-                  >
-                    <option value="Revisão">Revisão</option>
-                    <option value="Aprovado">Aprovado</option>
-                    <option value="Obsoleto">Obsoleto</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Substituir Arquivo (Opcional)</label>
-                <div className="file-upload-group">
-                  <div className="file-input-wrapper">
-                    <input 
-                      type="file" 
-                      id="edit-file" 
-                      onChange={e => setSelectedFile(e.target.files?.[0] || null)}
-                      hidden
-                    />
-                    <button 
-                      type="button" 
-                      className="btn-select-file"
-                      onClick={() => document.getElementById('edit-file')?.click()}
-                    >
-                      Selecionar Novo Arquivo
-                    </button>
-                    <span className="selected-filename">
-                      {selectedFile ? selectedFile.name : 'Nenhum arquivo novo selecionado'}
-                    </span>
-                  </div>
-                  <p className="file-hint">Mantenha vazio para conservar o arquivo atual: {editingDoc.original_name}</p>
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button type="button" className="btn-cancel" onClick={() => setEditingDoc(null)}>Cancelar</button>
-                <button type="submit" className="btn-save">Salvar Alterações</button>
-              </div>
-            </form>
+            <DocumentForm 
+              initialData={editingDoc}
+              user={user}
+              category={editingDoc.category}
+              onSubmit={handleUpdateSubmit}
+              onCancel={() => setEditingDoc(null)}
+              isUploading={isUpdating}
+            />
           </div>
         </div>
       )}

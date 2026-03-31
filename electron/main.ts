@@ -14,9 +14,14 @@ console.log('VITE_DEV_SERVER_URL:', VITE_DEV_SERVER_URL)
 console.log('Caminho do Preload:', path.join(__dirname, 'preload.js'))
 
 function createWindow() {
+  const iconPath = process.env.VITE_PUBLIC 
+    ? path.join(process.env.VITE_PUBLIC, 'logotipo2.png')
+    : path.join(__dirname, '../public/logotipo2.png');
+
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,

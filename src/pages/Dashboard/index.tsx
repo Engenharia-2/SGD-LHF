@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DocumentList from '../../components/Documents/DocumentList';
+import PendingApprovals from '../../components/Documents/PendingApprovals';
 import { documentService } from '../../services/documentService';
 import type { Document } from '../../types';
 import './styles.css';
@@ -11,7 +12,6 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ user, pingResponse }) => {
   const [favorites, setFavorites] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const fetchFavorites = async () => {
     try {
@@ -19,8 +19,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user, pingResponse }) => {
       setFavorites(data);
     } catch (err) {
       console.error('Erro ao buscar favoritos:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -57,15 +55,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user, pingResponse }) => {
         </div>
       </div>
 
-      <div className="dashboard-content">
-        <DocumentList 
-          documents={favorites}
-          user={user}
-          title="Documentos Favoritados"
-          emptyMessage="Você ainda não possui documentos favoritados. Estrele documentos nos módulos de Processos ou Gestão para visualizá-los aqui."
-          onToggleFavorite={handleToggleFavorite}
-        />
-      </div>
+      {(user.role === 'Gestor' || user.role === 'Administrador') && (
+        <PendingApprovals />
+      )}
+
+      <DocumentList 
+        documents={favorites}
+        user={user}
+        title="Documentos Favoritados"
+        emptyMessage="Você ainda não possui documentos favoritados. Estrele documentos nos módulos de Processos ou Gestão para visualizá-los aqui."
+        onToggleFavorite={handleToggleFavorite}
+      />
     </div>
   );
 };

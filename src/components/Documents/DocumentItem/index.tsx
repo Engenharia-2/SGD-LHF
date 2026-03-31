@@ -36,7 +36,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
     setIsUpdatingStatus(true);
     try {
       await documentService.updateStatus(doc.id, newStatus);
-      setCurrentStatus(newStatus);
+      setCurrentStatus(newStatus as 'Revisão' | 'Aprovado' | 'Obsoleto');
       showAlert('Status atualizado com sucesso!', 'success');
     } catch (err: any) {
       showAlert(err.message, 'error');
@@ -69,7 +69,6 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
                 disabled={isUpdatingStatus}
                 title="Alterar Status do Documento"
               >
-                <option value="Revisão">Revisão</option>
                 <option value="Aprovado">Aprovado</option>
                 <option value="Obsoleto">Obsoleto</option>
               </select>

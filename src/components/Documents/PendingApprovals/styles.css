@@ -1,0 +1,216 @@
+.pending-approvals-container {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+.pending-approvals-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pending-approvals-title .badge {
+  background: #f85149;
+  color: white;
+  padding: 0.1rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pending-item-wrapper {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.pending-item-wrapper:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pending-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.02);
+  transition: all 0.2s;
+}
+
+.pending-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.pending-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.pending-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pending-info h4 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.pending-tag {
+  font-size: 0.7rem;
+  background: rgba(241, 196, 15, 0.15);
+  color: #d4ac0d;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.pending-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.pending-date {
+  font-size: 0.75rem !important;
+  color: #95a5a6 !important;
+}
+
+.pending-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Reusing icon button styles with specific colors */
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-view:hover {
+  color: #3498db;
+  background: rgba(52, 152, 219, 0.15);
+}
+
+.btn-approve-icon {
+  color: #27ae60;
+}
+
+.btn-approve-icon:hover {
+  color: #2ecc71;
+  background: rgba(46, 204, 113, 0.15);
+}
+
+.btn-reject-icon {
+  color: #c0392b;
+}
+
+.btn-reject-icon:hover {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.15);
+}
+
+/* Rejection Form Styles */
+.rejection-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: rgba(231, 76, 60, 0.03);
+  border-radius: 8px;
+  border: 1px dashed #e74c3c;
+  animation: slideDown 0.3s ease-out;
+}
+
+.rejection-form-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c0392b;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.rejection-form textarea {
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: var(--bg-body);
+  color: var(--text-main);
+}
+
+.rejection-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: var(--border-color);
+  color: var(--text-main);
+}
+
+.btn-confirm-rejection {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btn-confirm-rejection:hover {
+  opacity: 0.9;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

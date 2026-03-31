@@ -10,7 +10,12 @@ const SECTORS = [
   "Assistência", "Estoque", "Engenharia", "Geral"
 ];
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  user?: any;
+  onLogout?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ user: _userProp, onLogout: _onLogoutProp }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   
@@ -58,9 +63,6 @@ const Header: React.FC = () => {
   return (
     <header className="app-header">
       <div className="header-left">
-        <h1 className="header-title">SGD-LHF</h1>
-        <div className="header-divider"></div>
-        
         {canChangeSector ? (
           <div className="sector-selector-wrapper">
             <Filter size={16} className="selector-icon" />

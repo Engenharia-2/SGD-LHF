@@ -51,16 +51,16 @@ export const documentService = {
     return response.json();
   },
 
-  async update(id: number, formData: FormData): Promise<void> {
-    const response = await fetch(`${API_URL}/documents/${id}`, {
-      method: 'PUT',
+  async update(_id: number, formData: FormData): Promise<void> {
+    const response = await fetch(`${API_URL}/documents/upload`, {
+      method: 'POST',
       headers: getHeaders(true), // true for multipart/form-data
       body: formData,
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Erro ao atualizar documento.');
+      throw new Error(errorData.error || 'Erro ao criar nova versão do documento.');
     }
   },
 
@@ -102,5 +102,25 @@ export const documentService = {
     });
     if (!response.ok) throw new Error('Erro ao buscar favoritos');
     return response.json();
+  },
+
+  async listPendingApprovals(): Promise<Document[]> {
+    const response = await fetch(`${API_URL}/documents/pending-approvals`, {
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Erro ao buscar aprovações pendentes');
+    return response.json();
+  },
+
+  async handleApprovalAction(id: number, action: 'Aprovado' | 'Rejeitado', reason?: string): Promise<void> {
+    const response = await fetch(`${API_URL}/documents/${id}/approve-action`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ action, reason }),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Erro ao processar ação de aprovação');
+    }
   }
 };

@@ -1,0 +1,139 @@
+import React, { useEffect, useState } from 'react';
+import { Eye, Check, X, MessageSquare } from 'lucide-react';
+import { documentService } from '../../../services/documentService';
+import { useAlert } from '../../../contexts/AlertContext';
+import type { Document } from '../../../types';
+import './styles.css';
+
+const PendingApprovals: React.FC = () => {
+  const [pendingDocs, setPendingDocs] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [rejectionId, setRejectionId] = useState<number | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const { showAlert } = useAlert();
+
+  const fetchPending = async () => {
+    try {
+      const data = await documentService.listPendingApprovals();
+      setPendingDocs(data);
+    } catch (err) {
+      console.error('Erro ao buscar aprovações pendentes:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPending();
+  }, []);
+
+  const handleView = (filename: string) => {
+    if (!filename) {
+      showAlert("Erro: Nome do arquivo não encontrado.", "error");
+      return;
+    }
+    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/${filename}`;
+    window.open(fileUrl, '_blank');
+  };
+
+  const handleAction = async (id: number, action: 'Aprovado' | 'Rejeitado') => {
+    if (action === 'Rejeitado' && !rejectionReason.trim()) {
+      showAlert('Por favor, informe o motivo da rejeição.', 'error');
+      return;
+    }
+
+    try {
+      await documentService.handleApprovalAction(id, action, rejectionReason);
+      showAlert(`Documento ${action === 'Aprovado' ? 'aprovado' : 'rejeitado'} com sucesso!`, 'success');
+      setRejectionId(null);
+      setRejectionReason('');
+      fetchPending();
+    } catch (err: any) {
+      showAlert(err.message || 'Erro ao processar ação.', 'error');
+    }
+  };
+
+  if (loading) return null;
+  if (pendingDocs.length === 0) return null;
+
+  return (
+    <div className="pending-approvals-container">
+      <h3 className="pending-approvals-title">
+        Aprovações Pendentes
+        <span className="badge">{pendingDocs.length}</span>
+      </h3>
+      
+      <div className="pending-list">
+        {pendingDocs.map(doc => (
+          <div key={doc.id} className="pending-item-wrapper">
+            <div className="pending-item">
+              <div className="pending-info">
+                <div className="pending-title-row">
+                  <h4>{doc.title}</h4>
+                  <span className="pending-tag">Aguardando sua revisão</span>
+                </div>
+                <p>Setor: {doc.sector} | Responsável: {doc.responsible} | Versão: {doc.version}</p>
+                <p className="pending-date">Criado em: {new Date(doc.creation_date).toLocaleDateString()}</p>
+              </div>
+              
+              <div className="pending-actions">
+                <button 
+                  className="btn-icon btn-view" 
+                  onClick={() => handleView(doc.filename)}
+                  title="Visualizar Documento"
+                >
+                  <Eye size={20} />
+                </button>
+                <button 
+                  className="btn-icon btn-approve-icon" 
+                  onClick={() => handleAction(doc.id, 'Aprovado')}
+                  title="Aprovar Documento"
+                >
+                  <Check size={20} />
+                </button>
+                <button 
+                  className="btn-icon btn-reject-icon" 
+                  onClick={() => setRejectionId(doc.id)}
+                  title="Rejeitar Documento"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {rejectionId === doc.id && (
+              <div className="rejection-form">
+                <div className="rejection-form-header">
+                  <MessageSquare size={16} />
+                  <span>Justificativa da Rejeição</span>
+                </div>
+                <textarea 
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Explique detalhadamente o motivo da rejeição para o autor..."
+                  autoFocus
+                />
+                <div className="rejection-form-actions">
+                  <button className="btn-cancel" onClick={() => {
+                    setRejectionId(null);
+                    setRejectionReason('');
+                  }}>
+                    Cancelar
+                  </button>
+                  <button 
+                    className="btn-confirm-rejection" 
+                    onClick={() => handleAction(doc.id, 'Rejeitado')}
+                  >
+                    Confirmar Rejeição
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default PendingApprovals;

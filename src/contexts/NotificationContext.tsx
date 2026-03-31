@@ -72,12 +72,18 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
       eventSource.onmessage = (event) => {
         const newNotif = JSON.parse(event.data);
+        
+        // Se a notificação for direcionada a um usuário específico, filtrar
+        if (newNotif.target_user_id && newNotif.target_user_id !== user.id) {
+          return;
+        }
+
         setNotifications(prev => [
           { ...newNotif, is_read: false },
           ...prev
         ]);
         
-        // Mostrar o alerta visual (o antigo "useNotification" que agora é "useAlert")
+        // Mostrar o alerta visual
         showAlert(newNotif.message, newNotif.type);
       };
 

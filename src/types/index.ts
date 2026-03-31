@@ -25,6 +25,8 @@ export interface Document {
   creation_date: string;
   uploaded_at: string;
   is_favorite?: boolean;
+  is_published?: boolean;
+  my_approval_status?: 'Pendente' | 'Aprovado' | 'Rejeitado';
   parent_id?: number;
   history?: Partial<Document>[];
   v?: number;
