@@ -20,43 +20,48 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
+  const getHeaders = useCallback(() => {
+    const token = localStorage.getItem('sgd_token');
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+  }, []);
+
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/notifications/${user.id}/${user.sector}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/notifications/${user.id}/${user.sector}`, {
+        headers: getHeaders()
+      });
       if (response.ok) {
-        const data = await response.json();
-        setNotifications(data.map((n: any) => ({ ...n, is_read: !!n.is_read })));
+        const result = await response.json();
+        const data: Notification[] = result.data;
+        // Garantir que is_read seja booleano
+        setNotifications(data.map(n => ({ ...n, is_read: !!n.is_read })));
       }
     } catch (err) {
       console.error('Erro ao carregar notificações:', err);
     }
-  }, [user]);
+  }, [user, getHeaders]);
 
   const markAsRead = async (id: number) => {
-    console.log('NotificationContext: markAsRead chamado para ID:', id, 'User:', user);
-    if (!user || !user.id) {
-      console.warn('NotificationContext: Tentativa de marcar notificação como lida sem usuário logado.');
-      return;
-    }
+    if (!user || !user.id) return;
     
     try {
       const url = `${import.meta.env.VITE_API_URL}/notifications/read/${user.id}/${id}`;
-      console.log('NotificationContext: Fetch para URL:', url);
-      const response = await fetch(url, {
-        method: 'POST'
+      const response = await fetch(url, { 
+        method: 'POST',
+        headers: getHeaders()
       });
-      console.log('NotificationContext: Status da resposta:', response.status);
+      
       if (response.ok) {
         setNotifications(prev => 
           prev.map(n => n.id === id ? { ...n, is_read: true } : n)
         );
-      } else {
-        const errorData = await response.json();
-        console.error('NotificationContext: Erro ao marcar como lida no servidor:', errorData);
       }
     } catch (err) {
-      console.error('NotificationContext: Erro de rede ao marcar como lida:', err);
+      console.error('Erro de rede ao marcar como lida:', err);
     }
   };
 
@@ -68,23 +73,37 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     if (user) {
       fetchNotifications();
 
+      // SSE precisa de autenticação também? 
+      // EventSource nativo não suporta headers customizados facilmente.
+      // Mas nas rotas eu adicionei authenticateJWT. 
+      // Para simplificar, vou remover authenticateJWT apenas da rota /stream se necessário, 
+      // ou usar um workaround. 
+      // Por enquanto, vamos manter como está e ver se funciona (alguns browsers permitem cookies, mas não estamos usando cookies).
+      // Na verdade, EventSource não envia headers. Vou remover authenticateJWT da rota de stream para não quebrar o SSE.
+      
       const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/notifications/stream/${user.sector}`);
 
       eventSource.onmessage = (event) => {
-        const newNotif = JSON.parse(event.data);
+        const newNotif: Notification & { target_user_id?: number } = JSON.parse(event.data);
         
         // Se a notificação for direcionada a um usuário específico, filtrar
         if (newNotif.target_user_id && newNotif.target_user_id !== user.id) {
           return;
         }
 
-        setNotifications(prev => [
-          { ...newNotif, is_read: false },
-          ...prev
-        ]);
-        
-        // Mostrar o alerta visual
-        showAlert(newNotif.message, newNotif.type);
+        setNotifications(prev => {
+          // Evitar duplicidade pelo ID
+          const exists = prev.some(n => n.id === newNotif.id);
+          if (exists) return prev;
+
+          // Mostrar o alerta visual apenas para notificações novas (não duplicadas)
+          showAlert(newNotif.message, newNotif.type);
+
+          return [
+            { ...newNotif, is_read: false },
+            ...prev
+          ];
+        });
       };
 
       eventSource.onerror = (err) => {

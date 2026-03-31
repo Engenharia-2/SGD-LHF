@@ -41,15 +41,16 @@ const Login: React.FC<LoginProps> = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erro na autenticação');
+        throw new Error(data.message || 'Erro na autenticação');
       }
 
       if (isRegistering) {
-        showAlert('Conta criada com sucesso! Faça login.', 'success');
+        showAlert(data.message || 'Conta criada com sucesso! Faça login.', 'success');
         setIsRegistering(false);
         setPassword('');
       } else {
-        login(data.user, data.token);
+        // O payload do login está em data.data
+        login(data.data.user, data.data.token);
       }
     } catch (err: any) {
       setError(err.message);

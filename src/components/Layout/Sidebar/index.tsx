@@ -1,6 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, Users, ShieldCheck } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  FileText, 
+  BarChart3, 
+  GraduationCap, 
+  BookOpen, 
+  ClipboardList, 
+  FileSpreadsheet,
+  ShieldCheck 
+} from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import './styles.css';
 
@@ -36,15 +45,33 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/gestao" className={({ isActive }) => (isActive ? 'active' : '')}>
-              <Settings size={20} />
-              <span>Gestão</span>
+            <NavLink to="/relatorios" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <BarChart3 size={20} />
+              <span>Relatórios</span>
             </NavLink>
           </li>
           <li>
-            <NavLink to="/geral" className={({ isActive }) => (isActive ? 'active' : '')}>
-              <Users size={20} />
-              <span>Geral</span>
+            <NavLink to="/treinamento" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <GraduationCap size={20} />
+              <span>Treinamento</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/normas" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <BookOpen size={20} />
+              <span>Normas</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/atas" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <ClipboardList size={20} />
+              <span>Atas</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/formularios" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <FileSpreadsheet size={20} />
+              <span>Formulários</span>
             </NavLink>
           </li>
           {isAdminOrManager && (

@@ -5,8 +5,11 @@ import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
 import Dashboard from './pages/Dashboard'
 import Processos from './pages/Processos'
-import Gestao from './pages/Gestao'
-import Geral from './pages/Geral'
+import Relatorios from './pages/Relatorios'
+import Treinamento from './pages/Treinamento'
+import Normas from './pages/Normas'
+import Atas from './pages/Atas'
+import Formularios from './pages/Formularios'
 import Admin from './pages/Admin'
 import { useAuth } from './contexts/AuthContext'
 import './App.css'
@@ -28,7 +31,7 @@ function App() {
   }
 
   if (!user) {
-    return <Login onLogin={() => {}} />; // onLogin será removido do componente Login depois
+    return <Login />;
   }
 
   const isAdminOrManager = user.role === 'Administrador' || user.role === 'Gestor';
@@ -45,8 +48,11 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard user={user} pingResponse={pingResponse} />} />
               <Route path="/processos" element={<Processos />} />
-              <Route path="/gestao" element={<Gestao />} />
-              <Route path="/geral" element={<Geral />} />
+              <Route path="/relatorios" element={<Relatorios />} />
+              <Route path="/treinamento" element={<Treinamento />} />
+              <Route path="/normas" element={<Normas />} />
+              <Route path="/atas" element={<Atas />} />
+              <Route path="/formularios" element={<Formularios />} />
               
               {/* Rota Protegida */}
               {isAdminOrManager ? (

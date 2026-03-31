@@ -25,6 +25,9 @@ export default defineConfig({
     ]),
     renderer(),
   ],
+  server: {
+    host: true, // Habilita o acesso pelo IP da rede
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

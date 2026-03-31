@@ -27,8 +27,8 @@ const AdminList: React.FC = () => {
         headers: getHeaders()
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Erro ao carregar usuários');
-      setUsers(data);
+      if (!response.ok) throw new Error(data.message || 'Erro ao carregar usuários');
+      setUsers(data.data);
     } catch (err: any) {
       setError(err.message);
       showAlert(err.message, 'error');
@@ -47,12 +47,12 @@ const AdminList: React.FC = () => {
         method: 'PATCH',
         headers: getHeaders()
       });
+      const data = await response.json();
       if (response.ok) {
         setUsers(users.map(u => u.id === id ? { ...u, is_authorized: 1 } : u));
-        showAlert('Usuário autorizado com sucesso!', 'success');
+        showAlert(data.message || 'Usuário autorizado com sucesso!', 'success');
       } else {
-        const data = await response.json();
-        throw new Error(data.error || 'Erro ao autorizar');
+        throw new Error(data.message || 'Erro ao autorizar');
       }
     } catch (err: any) {
       showAlert(err.message, 'error');
@@ -67,12 +67,12 @@ const AdminList: React.FC = () => {
         method: 'DELETE',
         headers: getHeaders()
       });
+      const data = await response.json();
       if (response.ok) {
         setUsers(users.filter(u => u.id !== userToDelete));
-        showAlert('Usuário removido com sucesso.', 'success');
+        showAlert(data.message || 'Usuário removido com sucesso.', 'success');
       } else {
-        const data = await response.json();
-        throw new Error(data.error || 'Erro ao remover');
+        throw new Error(data.message || 'Erro ao remover');
       }
     } catch (err: any) {
       showAlert(err.message, 'error');

@@ -54,11 +54,13 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
       headers: { 'Authorization': `Bearer ${localStorage.getItem('sgd_token')}` }
     })
     .then(res => res.json())
-    .then(data => {
-      const approvers = data.filter((u: User) => 
-        (u.role === 'Gestor' || u.role === 'Administrador') && u.id !== user.id
-      );
-      setAvailableApprovers(approvers);
+    .then(result => {
+      if (result.status === 'success' && Array.isArray(result.data)) {
+        const approvers = result.data.filter((u: User) => 
+          (u.role === 'Gestor' || u.role === 'Administrador') && u.id !== user.id
+        );
+        setAvailableApprovers(approvers);
+      }
     })
     .catch(err => console.error('Erro ao buscar aprovadores:', err));
   }, [user.id]);

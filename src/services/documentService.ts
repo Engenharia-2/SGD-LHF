@@ -23,12 +23,12 @@ export const documentService = {
       body: formData,
     });
 
+    const data = await response.json();
     if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.error || 'Erro ao realizar upload do documento.');
+      throw new Error(data.message || 'Erro ao realizar upload do documento.');
     }
 
-    return response.json();
+    return data.data;
   },
 
   async delete(id: number): Promise<void> {
@@ -38,8 +38,8 @@ export const documentService = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Erro ao excluir documento.');
+      const data = await response.json();
+      throw new Error(data.message || 'Erro ao excluir documento.');
     }
   },
 
@@ -47,36 +47,34 @@ export const documentService = {
     const response = await fetch(`${API_URL}/documents?sector=${sector}&category=${category}`, {
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Erro ao buscar documentos');
-    return response.json();
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao buscar documentos');
+    return data.data;
   },
 
   async update(_id: number, formData: FormData): Promise<void> {
     const response = await fetch(`${API_URL}/documents/upload`, {
       method: 'POST',
-      headers: getHeaders(true), // true for multipart/form-data
+      headers: getHeaders(true),
       body: formData,
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Erro ao criar nova versão do documento.');
+      const data = await response.json();
+      throw new Error(data.message || 'Erro ao criar nova versão do documento.');
     }
   },
 
   async updateStatus(id: number, status: string): Promise<void> {
     const response = await fetch(`${API_URL}/documents/${id}/status`, {
       method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('sgd_token')}`,
-        'Content-Type': 'application/json'
-      },
+      headers: getHeaders(),
       body: JSON.stringify({ status }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Erro ao atualizar status do documento.');
+      const data = await response.json();
+      throw new Error(data.message || 'Erro ao atualizar status do documento.');
     }
   },
 
@@ -85,7 +83,10 @@ export const documentService = {
       method: 'POST',
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Erro ao favoritar documento');
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message || 'Erro ao favoritar documento');
+    }
   },
 
   async unfavorite(id: number): Promise<void> {
@@ -93,23 +94,28 @@ export const documentService = {
       method: 'DELETE',
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Erro ao remover favorito');
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message || 'Erro ao remover favorito');
+    }
   },
 
   async listFavorites(): Promise<Document[]> {
     const response = await fetch(`${API_URL}/documents/favorites`, {
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Erro ao buscar favoritos');
-    return response.json();
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao buscar favoritos');
+    return data.data;
   },
 
   async listPendingApprovals(): Promise<Document[]> {
     const response = await fetch(`${API_URL}/documents/pending-approvals`, {
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Erro ao buscar aprovações pendentes');
-    return response.json();
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao buscar aprovações pendentes');
+    return data.data;
   },
 
   async handleApprovalAction(id: number, action: 'Aprovado' | 'Rejeitado', reason?: string): Promise<void> {
@@ -120,7 +126,7 @@ export const documentService = {
     });
     if (!response.ok) {
       const data = await response.json();
-      throw new Error(data.error || 'Erro ao processar ação de aprovação');
+      throw new Error(data.message || 'Erro ao processar ação de aprovação');
     }
   }
 };

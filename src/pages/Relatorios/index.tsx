@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { Document } from '../../types';
 import './styles.css';
 
-const Gestao: React.FC = () => {
+const Relatorios: React.FC = () => {
   const { user, activeSector, canModify } = useAuth();
 
   const { 
@@ -18,9 +18,8 @@ const Gestao: React.FC = () => {
     updateDocument,
     deleteDocument,
     toggleFavorite
-  } = useDocuments(activeSector, 'GESTAO');
+  } = useDocuments(activeSector, 'RELATORIOS');
 
-  // Utilizando o hook de filtragem abstraído
   const { 
     filteredDocuments, 
     setActiveFilters, 
@@ -40,9 +39,9 @@ const Gestao: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="gestao-container">
+    <div className="relatorios-container">
       <div className="page-header">
-        <h2>Gestão - {activeSector}</h2>
+        <h2>Relatórios - {activeSector}</h2>
         {user.sector !== activeSector && (
           <span className="view-mode-badge">Modo Visualização: {activeSector}</span>
         )}
@@ -51,7 +50,7 @@ const Gestao: React.FC = () => {
       {canModify && (
         <AddDocument 
           user={user} 
-          category="GESTAO" 
+          category="RELATORIOS" 
           onDocumentAdded={handleDocumentAdded} 
         />
       )}
@@ -61,11 +60,11 @@ const Gestao: React.FC = () => {
       <DocumentList 
         documents={filteredDocuments}
         user={user}
-        title={`Lista de Gestão (${activeSector})`}
+        title={`Lista de Relatórios (${activeSector})`}
         emptyMessage={
           hasActiveFilters 
             ? "Nenhum documento corresponde aos filtros aplicados."
-            : `Nenhum documento de gestão encontrado para o setor ${activeSector}.`
+            : `Nenhum relatório encontrado para o setor ${activeSector}.`
         }
         onDelete={deleteDocument}
         onUpdate={updateDocument}
@@ -75,4 +74,4 @@ const Gestao: React.FC = () => {
   );
 };
 
-export default Gestao;
+export default Relatorios;
