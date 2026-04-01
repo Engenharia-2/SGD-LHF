@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { useAlert } from '../../../contexts/AlertContext';
 import ConfirmModal from '../../Layout/ConfirmModal';
 import DocumentItem from '../DocumentItem';
-
+import DocumentModal from '../DocumentModal';
 import DocumentForm from '../DocumentForm';
 
 interface DocumentListProps {
@@ -33,6 +33,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
   onToggleFavorite
 }) => {
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
+  const [viewingDoc, setViewingDoc] = useState<Document | null>(null);
   const [docToDelete, setDocToDelete] = useState<number | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -42,25 +43,12 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
   const canModify = user.role === 'Administrador' || user.role === 'Gestor';
 
-  const handleView = (filename: string) => {
-    if (!filename) {
-      showAlert("Erro: Nome do arquivo não encontrado.", "error");
-      return;
-    }
-    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/${filename}`;
-    window.open(fileUrl, '_blank');
-  };
-
   const handleConfirmDelete = () => {
     if (docToDelete && onDelete) {
       onDelete(docToDelete);
       showAlert("Documento e todas as suas versões excluídos.", "success");
       setDocToDelete(null);
     }
-  };
-
-  const handleEditClick = (doc: Document) => {
-    setEditingDoc(doc);
   };
 
   const handleUpdateSubmit = async (formData: FormData) => {
@@ -96,8 +84,8 @@ const DocumentList: React.FC<DocumentListProps> = ({
               key={doc.id}
               doc={doc}
               canModify={canModify}
-              onView={handleView}
-              onEdit={handleEditClick}
+              onView={(document) => setViewingDoc(document)}
+              onEdit={(document) => setEditingDoc(document)}
               onDelete={(id) => setDocToDelete(id)}
               onToggleFavorite={onToggleFavorite}
             />
@@ -105,6 +93,15 @@ const DocumentList: React.FC<DocumentListProps> = ({
         </ul>
       )}
 
+      {/* Modal de Detalhes (Visualização) */}
+      {viewingDoc && (
+        <DocumentModal 
+          document={viewingDoc} 
+          onClose={() => setViewingDoc(null)} 
+        />
+      )}
+
+      {/* Modal de Edição (Nova Versão) */}
       {editingDoc && (
         <div className="modal-overlay">
           <div className="modal-content modal-large">

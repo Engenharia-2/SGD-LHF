@@ -179,72 +179,7 @@
 }
 
 .modal-content.modal-large {
-  max-width: 650px;
-}
-
-.form-sections-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-main-info {
-  width: 100%;
-}
-
-.form-approval-info {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.multi-select-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  max-height: 100px;
-  overflow-y: auto;
-  padding: 0.25rem;
-}
-
-.sectors-grid, .approvers-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.15rem;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0.4rem 0.6rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-  color: var(--text-main);
-  transition: background 0.2s;
-  border-radius: 4px;
-  user-select: none;
-}
-
-.checkbox-item:hover {
-  background-color: var(--bg-main);
-}
-
-.checkbox-item input[type="checkbox"] {
-  appearance: auto;
-  margin: 0;
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transform: translateY(4px);
-}
-
-.checkbox-item span {
-  line-height: 1;
-  display: inline-block;
-  margin-left: 0.3rem;
+  max-width: 900px;
 }
 
 .empty-info {

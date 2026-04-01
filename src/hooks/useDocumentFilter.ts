@@ -4,6 +4,7 @@ import type { Filters } from '../components/Documents/DocumentFilter';
 
 export const useDocumentFilter = (documents: Document[]) => {
   const [activeFilters, setActiveFilters] = useState<Filters>({
+    doc_code: '',
     title: '',
     responsible: '',
     date: '',
@@ -13,6 +14,8 @@ export const useDocumentFilter = (documents: Document[]) => {
 
   const filteredDocuments = useMemo(() => {
     return documents.filter(doc => {
+      const matchCode = (doc.doc_code || '').toLowerCase().includes(activeFilters.doc_code.toLowerCase());
+
       const matchTitle = (doc.title || '').toLowerCase().includes(activeFilters.title.toLowerCase());
       
       const matchResponsible = (doc.responsible || '').toLowerCase().includes(activeFilters.responsible.toLowerCase());
@@ -24,7 +27,7 @@ export const useDocumentFilter = (documents: Document[]) => {
       const docDate = doc.creation_date ? doc.creation_date.split('T')[0] : '';
       const matchDate = activeFilters.date === '' || docDate === activeFilters.date;
 
-      return matchTitle && matchResponsible && matchVersion && matchStatus && matchDate;
+      return matchCode && matchTitle && matchResponsible && matchVersion && matchStatus && matchDate;
     });
   }, [documents, activeFilters]);
 

@@ -78,8 +78,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       // Mas nas rotas eu adicionei authenticateJWT. 
       // Para simplificar, vou remover authenticateJWT apenas da rota /stream se necessário, 
       // ou usar um workaround. 
-      // Por enquanto, vamos manter como está e ver se funciona (alguns browsers permitem cookies, mas não estamos usando cookies).
-      // Na verdade, EventSource não envia headers. Vou remover authenticateJWT da rota de stream para não quebrar o SSE.
       
       const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/notifications/stream/${user.sector}`);
 
@@ -97,7 +95,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
           if (exists) return prev;
 
           // Mostrar o alerta visual apenas para notificações novas (não duplicadas)
-          showAlert(newNotif.message, newNotif.type);
+          showAlert(newNotif.message, newNotif.type as any);
 
           return [
             { ...newNotif, is_read: false },

@@ -75,6 +75,12 @@
   font-weight: 700;
 }
 
+.pending-doc-code {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-family: monospace;
+}
+
 .pending-tag {
   font-size: 0.7rem;
   background: rgba(241, 196, 15, 0.15);

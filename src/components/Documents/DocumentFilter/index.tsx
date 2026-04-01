@@ -3,6 +3,7 @@ import './styles.css';
 import { Search, RotateCcw, Filter } from 'lucide-react';
 
 interface Filters {
+  doc_code: string;
   title: string;
   responsible: string;
   date: string;
@@ -17,6 +18,7 @@ interface DocumentFilterProps {
 const DocumentFilter: React.FC<DocumentFilterProps> = ({ onFilter }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [filters, setFilters] = useState<Filters>({
+    doc_code: '',
     title: '',
     responsible: '',
     date: '',
@@ -31,6 +33,7 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({ onFilter }) => {
 
   const handleReset = () => {
     setFilters({
+      doc_code: '',
       title: '',
       responsible: '',
       date: '',
@@ -56,6 +59,16 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({ onFilter }) => {
 
       <div className="filter-content">
         <div className="filter-grid">
+          <div className="filter-group">
+            <label>Código</label>
+            <input 
+              type="text" 
+              placeholder="Ex: PQS-1" 
+              value={filters.doc_code}
+              onChange={(e) => setFilters({ ...filters, doc_code: e.target.value })}
+            />
+          </div>
+
           <div className="filter-group">
             <label>Título</label>
             <div className="input-with-icon">

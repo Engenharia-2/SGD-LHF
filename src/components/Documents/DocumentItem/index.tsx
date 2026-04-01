@@ -8,7 +8,7 @@ import './styles.css';
 interface DocumentItemProps {
   doc: Document;
   canModify: boolean;
-  onView: (filename: string) => void;
+  onView: (doc: Document) => void;
   onEdit: (doc: Document) => void;
   onDelete: (id: number) => void;
   onToggleFavorite?: (id: number, currentStatus: boolean) => void;
@@ -27,7 +27,6 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const { showAlert } = useAlert();
   
-  // Encontrar os dados da versão selecionada no histórico
   const currentView = doc.history?.find(v => v.id === selectedVersionId) || doc;
 
   const handleStatusChange = async (newStatus: string) => {
@@ -46,8 +45,8 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   };
 
   return (
-    <li className="document-item">
-      <div className="doc-favorite">
+    <li className="document-item" onClick={() => onView(doc)}>
+      <div className="doc-favorite" onClick={e => e.stopPropagation()}>
         <button 
           className={`btn-icon btn-favorite ${doc.is_favorite ? 'active' : ''}`}
           onClick={() => onToggleFavorite?.(doc.id, !!doc.is_favorite)}
@@ -58,29 +57,34 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
       </div>
       <div className="doc-info">
         <div className="doc-title-row">
-          <span className="doc-title">{currentView.title}</span>
+          <span className="doc-title">
+            {currentView.doc_code && <strong className="doc-code">[{currentView.doc_code}] </strong>}
+            {currentView.title}
+          </span>
           
-          {canModify && selectedVersionId === doc.id ? (
-            <div className="status-selector-wrapper">
-              <select 
-                className={`doc-status-select status-${currentStatus.toLowerCase()}`}
-                value={currentStatus}
-                onChange={(e) => handleStatusChange(e.target.value)}
-                disabled={isUpdatingStatus}
-                title="Alterar Status do Documento"
-              >
-                <option value="Aprovado">Aprovado</option>
-                <option value="Obsoleto">Obsoleto</option>
-              </select>
-            </div>
-          ) : (
-            <span className={`doc-status status-${(selectedVersionId === doc.id ? currentStatus : currentView.status || 'revisão').toLowerCase()}`}>
-              {selectedVersionId === doc.id ? currentStatus : currentView.status}
-            </span>
-          )}
+          <div onClick={e => e.stopPropagation()}>
+            {canModify && selectedVersionId === doc.id ? (
+              <div className="status-selector-wrapper">
+                <select 
+                  className={`doc-status-select status-${currentStatus.toLowerCase()}`}
+                  value={currentStatus}
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                  disabled={isUpdatingStatus}
+                  title="Alterar Status do Documento"
+                >
+                  <option value="Aprovado">Aprovado</option>
+                  <option value="Obsoleto">Obsoleto</option>
+                </select>
+              </div>
+            ) : (
+              <span className={`doc-status status-${(selectedVersionId === doc.id ? currentStatus : currentView.status || 'revisão').toLowerCase()}`}>
+                {selectedVersionId === doc.id ? currentStatus : currentView.status}
+              </span>
+            )}
+          </div>
           
-          {doc.history && doc.history.length > 1 && (
-            <div className="version-selector">
+          {canModify && doc.history && doc.history.length > 1 && (
+            <div className="version-selector" onClick={e => e.stopPropagation()}>
               <select 
                 value={selectedVersionId} 
                 onChange={(e) => setSelectedVersionId(Number(e.target.value))}
@@ -103,20 +107,12 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
           {selectedVersionId !== doc.id && <strong className="old-version-warning">* Visualizando versão antiga</strong>}
         </span>
       </div>
-      <div className="doc-actions">
-        <button 
-          className="btn-icon btn-view" 
-          onClick={() => onView(currentView.filename || '')}
-          title="Visualizar Versão Selecionada"
-        >
-          <Eye size={18} />
-        </button>
-        
+      <div className="doc-actions" onClick={e => e.stopPropagation()}>
         {canModify && (
           <>
             <button 
               className="btn-icon btn-edit" 
-              onClick={() => onEdit(doc)} // Sempre edita a partir da base mais recente
+              onClick={() => onEdit(doc)}
               title="Criar Nova Versão"
             >
               <Pencil size={18} />

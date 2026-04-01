@@ -3,6 +3,7 @@ import { Eye, Check, X, MessageSquare } from 'lucide-react';
 import { documentService } from '../../../services/documentService';
 import { useAlert } from '../../../contexts/AlertContext';
 import type { Document } from '../../../types';
+import DocumentModal from '../DocumentModal';
 import './styles.css';
 
 const PendingApprovals: React.FC = () => {
@@ -10,6 +11,7 @@ const PendingApprovals: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [rejectionId, setRejectionId] = useState<number | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const { showAlert } = useAlert();
 
   const fetchPending = async () => {
@@ -27,13 +29,8 @@ const PendingApprovals: React.FC = () => {
     fetchPending();
   }, []);
 
-  const handleView = (filename: string) => {
-    if (!filename) {
-      showAlert("Erro: Nome do arquivo não encontrado.", "error");
-      return;
-    }
-    const fileUrl = `${import.meta.env.VITE_API_URL}/uploads/${filename}`;
-    window.open(fileUrl, '_blank');
+  const handleView = (doc: Document) => {
+    setSelectedDoc(doc);
   };
 
   const handleAction = async (id: number, action: 'Aprovado' | 'Rejeitado') => {
@@ -69,7 +66,10 @@ const PendingApprovals: React.FC = () => {
             <div className="pending-item">
               <div className="pending-info">
                 <div className="pending-title-row">
-                  <h4>{doc.title}</h4>
+                  <h4>
+                    {doc.doc_code && <span className="pending-doc-code">[{doc.doc_code}] </span>}
+                    {doc.title}
+                  </h4>
                   <span className="pending-tag">Aguardando sua revisão</span>
                 </div>
                 <p>Setor: {doc.sector} | Responsável: {doc.responsible} | Versão: {doc.version}</p>
@@ -79,8 +79,8 @@ const PendingApprovals: React.FC = () => {
               <div className="pending-actions">
                 <button 
                   className="btn-icon btn-view" 
-                  onClick={() => handleView(doc.filename)}
-                  title="Visualizar Documento"
+                  onClick={() => handleView(doc)}
+                  title="Visualizar Detalhes"
                 >
                   <Eye size={20} />
                 </button>
@@ -132,6 +132,13 @@ const PendingApprovals: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {selectedDoc && (
+        <DocumentModal 
+          document={selectedDoc} 
+          onClose={() => setSelectedDoc(null)} 
+        />
+      )}
     </div>
   );
 };

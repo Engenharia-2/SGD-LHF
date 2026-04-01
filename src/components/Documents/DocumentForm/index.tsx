@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { User, Document } from '../../../types';
+import { X, FileText, Upload, Plus } from 'lucide-react';
 import './styles.css';
 
 interface DocumentFormProps {
@@ -28,7 +29,6 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   onCancel,
   isUploading
 }) => {
-  // Lógica de incremento automático de versão
   const getNextVersion = (v: string) => {
     if (!v) return '1.0';
     const parts = v.split('.');
@@ -38,9 +38,11 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
     return v;
   };
 
+  const [docCode, setDocCode] = useState(initialData?.doc_code || '');
   const [title, setTitle] = useState(initialData?.title || '');
+  const [description, setDescription] = useState(initialData?.description || '');
   const [version, setVersion] = useState(initialData ? getNextVersion(initialData.version) : '1.0');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [approverIds, setApproverIds] = useState<number[]>([]);
   const [targetSectors, setTargetSectors] = useState<string[]>(initialData?.sector ? [initialData.sector] : [user.sector]);
   const [availableApprovers, setAvailableApprovers] = useState<User[]>([]);
@@ -49,7 +51,6 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Buscar gestores e admins para a lista de aprovadores
     fetch(`${import.meta.env.VITE_API_URL}/admin/users`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('sgd_token')}` }
     })
@@ -66,11 +67,22 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   }, [user.id]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      if (!title) setTitle(file.name.split('.')[0]);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+      
+      if (!title && newFiles.length > 0) {
+        setTitle(newFiles[0].name.split('.')[0]);
+      }
+      
+      // Reset input to allow selecting same file again if needed
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const toggleApprover = (id: number) => {
@@ -87,8 +99,8 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile && !initialData) {
-      setError('Por favor, selecione um arquivo.');
+    if (selectedFiles.length === 0 && !initialData) {
+      setError('Por favor, selecione pelo menos um arquivo.');
       return;
     }
     if (approverIds.length === 0) {
@@ -97,8 +109,14 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
     }
 
     const formData = new FormData();
-    if (selectedFile) formData.append('file', selectedFile);
+    // Suporte a múltiplos arquivos usando a chave 'files'
+    selectedFiles.forEach(file => {
+      formData.append('files', file);
+    });
+
+    formData.append('doc_code', docCode);
     formData.append('title', title);
+    formData.append('description', description);
     formData.append('sector', user.sector);
     formData.append('category', category);
     formData.append('responsible', user.username);
@@ -120,15 +138,40 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
       {error && <p className="upload-error">{error}</p>}
 
       <div className="form-sections-container">
+        {/* Coluna da Esquerda: Informações de Texto e Arquivos */}
         <div className="form-main-info">
+          <div className="form-row">
+            <div className="form-group code-group">
+              <label>Código do Registro</label>
+              <input 
+                type="text" 
+                value={docCode}
+                onChange={(e) => setDocCode(e.target.value)}
+                placeholder="Ex: PQS"
+                disabled={!!initialData}
+              />
+              <small className="help-text">Se digitar apenas o prefixo (ex: PQS), o sistema gerará o próximo número.</small>
+            </div>
+
+            <div className="form-group title-group">
+              <label>Título do Registro</label>
+              <input 
+                type="text" 
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex: Instrução de Trabalho"
+                required
+              />
+            </div>
+          </div>
+
           <div className="form-group">
-            <label>Título do Documento</label>
-            <input 
-              type="text" 
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex: Instrução de Trabalho"
-              required
+            <label>Descrição Detalhada</label>
+            <textarea 
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Descreva o propósito e conteúdo deste documento..."
+              rows={3}
             />
           </div>
 
@@ -144,31 +187,53 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
           </div>
 
           <div className="form-group file-upload-group">
-            <label>Documento (Arquivo)</label>
+            <label>Documentos (Arquivos)</label>
             <div className="file-input-wrapper">
               <input
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
                 accept=".pdf,.docx,.doc,.xlsx,.xls"
+                multiple
                 onChange={handleFileChange}
               />
               <button 
                 type="button"
-                className="btn-select-file"
+                className="btn-add-files"
                 onClick={() => fileInputRef.current?.click()}
               >
-                {selectedFile ? 'Trocar Arquivo' : 'Selecionar Arquivo'}
+                <Plus size={18} />
+                Selecionar Arquivos
               </button>
-              {selectedFile ? (
-                <span className="selected-filename">{selectedFile.name}</span>
-              ) : initialData ? (
-                <span className="selected-filename">Mantendo: {initialData.original_name}</span>
-              ) : null}
             </div>
+
+            {selectedFiles.length > 0 && (
+              <div className="selected-files-list">
+                {selectedFiles.map((file, index) => (
+                  <div key={`${file.name}-${index}`} className="file-item-badge">
+                    <FileText size={14} />
+                    <span title={file.name}>{file.name}</span>
+                    <button 
+                      type="button" 
+                      className="btn-remove-file"
+                      onClick={() => removeFile(index)}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {initialData && selectedFiles.length === 0 && (
+              <div className="keep-current-file">
+                <span className="selected-filename">Mantendo arquivos da versão anterior</span>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Coluna da Direita: Seletores de Aprovadores e Setores */}
         <div className="form-approval-info">
           <div className="form-group">
             <label>Selecionar Aprovadores (Obrigatório)</label>
@@ -209,7 +274,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
         <button type="button" className="btn-cancel" onClick={onCancel} disabled={isUploading}>
           Cancelar
         </button>
-        <button type="submit" className="btn-submit" disabled={isUploading}>
+        <button type="submit" className="btn-submit" disabled={isUploading || (selectedFiles.length === 0 && !initialData)}>
           {isUploading ? 'Processando...' : initialData ? 'Criar Nova Versão' : 'Enviar para Aprovação'}
         </button>
       </div>

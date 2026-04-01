@@ -12,10 +12,12 @@ export type DocumentStatus = 'Revisão' | 'Aprovado' | 'Obsoleto';
 
 export interface Document {
   id: number;
+  doc_code?: string;
   title: string;
-  filename: string;
-  original_name: string;
-  mimetype: string;
+  description?: string;
+  filename: string | null;
+  original_name: string | null;
+  mimetype: string | null;
   size: number;
   sector: string;
   category: string;
@@ -29,6 +31,13 @@ export interface Document {
   my_approval_status?: 'Pendente' | 'Aprovado' | 'Rejeitado';
   parent_id?: number;
   history?: Partial<Document>[];
+  files?: Array<{
+    id: number;
+    filename: string;
+    original_name: string;
+    mimetype: string;
+    size: number;
+  }>;
   v?: number;
 }
 
