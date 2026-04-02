@@ -1,0 +1,114 @@
+.pending-readings-container {
+  margin: 1.5rem 0;
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.pending-readings-title {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pending-readings-title .badge {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pending-readings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pending-reading-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-main);
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s;
+}
+
+.pending-reading-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.reading-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.reading-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.reading-user strong {
+  color: var(--primary-color);
+}
+
+.reading-doc {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.reading-time {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.reading-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-confirm-reading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #059669;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-confirm-reading:hover {
+  background-color: #047857;
+  transform: scale(1.02);
+}
+
+.btn-confirm-reading svg {
+  stroke-width: 3;
+}

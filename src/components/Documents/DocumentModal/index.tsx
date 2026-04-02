@@ -1,6 +1,9 @@
-import React from 'react';
-import { X, FileText, Calendar, User, Tag, Layers, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, FileText, Calendar, User, Tag, Layers, Info, ShieldCheck, CheckCircle, Clock, Users, AlertCircle } from 'lucide-react';
 import type { Document } from '../../../types';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useAlert } from '../../../contexts/AlertContext';
+import { documentService } from '../../../services/documentService';
 import './styles.css';
 
 interface DocumentModalProps {
@@ -8,7 +11,39 @@ interface DocumentModalProps {
   onClose: () => void;
 }
 
+interface ReadingStats {
+  read: Array<{ id: number, username: string, status: string, confirmed_at: string | null }>;
+  missing: Array<{ id: number, username: string }>;
+}
+
 const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose }) => {
+  const { user } = useAuth();
+  const { showAlert } = useAlert();
+  const [isMarking, setIsMarking] = useState(false);
+  const [hasMarked, setHasMarked] = useState(false);
+  const [stats, setStats] = useState<ReadingStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(false);
+
+  const isAdminOrManager = user?.role === 'Administrador' || user?.role === 'Gestor';
+
+  useEffect(() => {
+    if (isAdminOrManager && document.is_published) {
+      fetchStats();
+    }
+  }, [document.id, isAdminOrManager]);
+
+  const fetchStats = async () => {
+    setLoadingStats(true);
+    try {
+      const data = await documentService.getReadingStats(document.id);
+      setStats(data);
+    } catch (err: unknown) {
+      console.error('Erro ao buscar estatísticas:', err);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('pt-BR');
@@ -21,6 +56,23 @@ const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose }) => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
+
+  const handleMarkAsRead = async () => {
+    if (!user) return;
+    setIsMarking(true);
+    try {
+      await documentService.markAsRead(document.id);
+      setHasMarked(true);
+      showAlert('Leitura registrada! Aguarde a confirmação do gestor.', 'success');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao registrar leitura.';
+      showAlert(errorMessage, 'error');
+    } finally {
+      setIsMarking(false);
+    }
+  };
+
+  const showReadingAction = document.is_published && user?.role === 'Funcionario';
 
   return (
     <div className="document-modal-overlay" onClick={onClose}>
@@ -80,6 +132,7 @@ const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose }) => {
             </div>
           </section>
 
+          {/* Seção de Arquivos */}
           <section className="document-files-section">
             <h4><Layers size={18} /> Arquivos do Registro</h4>
             <div className="files-list-container">
@@ -119,9 +172,65 @@ const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose }) => {
               )}
             </div>
           </section>
+
+          {/* Seção de Conformidade (Apenas para Gestores/Admins) */}
+          {isAdminOrManager && document.is_published && (
+            <section className="compliance-section">
+              <div className="compliance-header">
+                <h4><Users size={18} /> Controle de Conformidade (Leitura)</h4>
+                {loadingStats && <span className="loading-small">Atualizando...</span>}
+              </div>
+              
+              <div className="compliance-grid">
+                <div className="compliance-column">
+                  <h5 className="list-title text-success"><CheckCircle size={14} /> Lidos e Confirmados</h5>
+                  <ul className="user-status-list">
+                    {stats?.read.map(r => (
+                      <li key={r.id} className={r.status === 'Confirmado' ? 'status-ok' : 'status-pending'}>
+                        <span className="username">{r.username}</span>
+                        <span className="status-label">{r.status === 'Confirmado' ? 'OK' : 'Pendente'}</span>
+                      </li>
+                    ))}
+                    {stats?.read.length === 0 && <li className="empty-list">Nenhum registro.</li>}
+                  </ul>
+                </div>
+
+                <div className="compliance-column">
+                  <h5 className="list-title text-danger"><AlertCircle size={14} /> Pendentes de Leitura</h5>
+                  <ul className="user-status-list">
+                    {stats?.missing.map(m => (
+                      <li key={m.id} className="status-missing">
+                        <span className="username">{m.username}</span>
+                      </li>
+                    ))}
+                    {stats?.missing.length === 0 && <li className="empty-list">Todos leram!</li>}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          )}
         </main>
 
         <footer className="document-modal-footer">
+          <div className="footer-actions-left">
+            {showReadingAction && (
+              hasMarked ? (
+                <div className="reading-status-message">
+                  <Clock size={18} />
+                  <span>Leitura registrada. Aguardando validação do gestor.</span>
+                </div>
+              ) : (
+                <button 
+                  className="btn-mark-read-modal" 
+                  onClick={handleMarkAsRead}
+                  disabled={isMarking}
+                >
+                  <CheckCircle size={18} />
+                  {isMarking ? 'Registrando...' : 'Li e compreendo este documento'}
+                </button>
+              )
+            )}
+          </div>
           <button className="btn-secondary" onClick={onClose}>Fechar</button>
         </footer>
       </div>
@@ -129,5 +238,4 @@ const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose }) => {
   );
 };
 
-import { ShieldCheck } from 'lucide-react';
 export default DocumentModal;

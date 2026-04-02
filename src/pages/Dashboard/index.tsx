@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DocumentList from '../../components/Documents/DocumentList';
 import PendingApprovals from '../../components/Documents/PendingApprovals';
+import PendingReadings from '../../components/Documents/PendingReadings';
 import { documentService } from '../../services/documentService';
 import type { Document, User } from '../../types';
 
@@ -40,6 +41,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, pingResponse }) => {
     }
   };
 
+  const isAdminOrManager = user.role === 'Gestor' || user.role === 'Administrador';
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -54,8 +57,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user, pingResponse }) => {
         </div>
       </div>
 
-      {(user.role === 'Gestor' || user.role === 'Administrador') && (
-        <PendingApprovals />
+      {isAdminOrManager && (
+        <>
+          <PendingApprovals />
+          <PendingReadings />
+        </>
       )}
 
       <DocumentList 
@@ -68,6 +74,4 @@ const Dashboard: React.FC<DashboardProps> = ({ user, pingResponse }) => {
     </div>
   );
 };
-
-export default Dashboard;
-
+ export default Dashboard;

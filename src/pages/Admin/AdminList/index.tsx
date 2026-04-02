@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState, use } from 'react';
 import './styles.css';
 import { useAlert } from '../../../contexts/AlertContext';
 import ConfirmModal from '../../../components/Layout/ConfirmModal';
 import type { User } from '../../../types';
 
-const AdminList: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+interface AdminListProps {
+  usersPromise: Promise<User[]>;
+}
+
+const AdminList: React.FC<AdminListProps> = ({ usersPromise }) => {
+  // O hook use() suspende o componente até a promise resolver
+  const initialUsers = use(usersPromise);
+  
+  // Usamos o resultado inicial para popular nosso estado local (para mutações rápidas)
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
   const {
@@ -22,27 +28,6 @@ const AdminList: React.FC = () => {
     };
   };
 
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/users`, {
-        headers: getHeaders()
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Erro ao carregar usuários');
-      setUsers(data.data);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários';
-      setError(errorMessage);
-      showAlert(errorMessage, 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const handleAuthorize = async (id: number) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/users/${id}/authorize`, {
@@ -51,7 +36,7 @@ const AdminList: React.FC = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        setUsers(users.map(u => u.id === id ? { ...u, is_authorized: 1 } : u));
+        setUsers(prev => prev.map(u => u.id === id ? { ...u, is_authorized: true } : u));
         showAlert(data.message || 'Usuário autorizado com sucesso!', 'success');
       } else {
         throw new Error(data.message || 'Erro ao autorizar');
@@ -72,7 +57,7 @@ const AdminList: React.FC = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        setUsers(users.filter(u => u.id !== userToDelete));
+        setUsers(prev => prev.filter(u => u.id !== userToDelete));
         showAlert(data.message || 'Usuário removido com sucesso.', 'success');
       } else {
         throw new Error(data.message || 'Erro ao remover');
@@ -84,9 +69,6 @@ const AdminList: React.FC = () => {
       setUserToDelete(null);
     }
   };
-
-  if (loading) return <p>Carregando usuários...</p>;
-  if (error) return <p className="error-text">{error}</p>;
 
   return (
     <div className="admin-list-wrapper">
