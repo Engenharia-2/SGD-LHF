@@ -45,8 +45,9 @@ const PendingApprovals: React.FC = () => {
       setRejectionId(null);
       setRejectionReason('');
       fetchPending();
-    } catch (err: any) {
-      showAlert(err.message || 'Erro ao processar ação.', 'error');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao processar ação.';
+      showAlert(errorMessage, 'error');
     }
   };
 

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import './styles.css';
 import { useAlert } from '../../../contexts/AlertContext';
 import ConfirmModal from '../../../components/Layout/ConfirmModal';
+import type { User } from '../../../types';
 
 const AdminList: React.FC = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
@@ -29,9 +30,10 @@ const AdminList: React.FC = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Erro ao carregar usuários');
       setUsers(data.data);
-    } catch (err: any) {
-      setError(err.message);
-      showAlert(err.message, 'error');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários';
+      setError(errorMessage);
+      showAlert(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -54,8 +56,9 @@ const AdminList: React.FC = () => {
       } else {
         throw new Error(data.message || 'Erro ao autorizar');
       }
-    } catch (err: any) {
-      showAlert(err.message, 'error');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao autorizar';
+      showAlert(errorMessage, 'error');
     }
   };
 
@@ -74,8 +77,9 @@ const AdminList: React.FC = () => {
       } else {
         throw new Error(data.message || 'Erro ao remover');
       }
-    } catch (err: any) {
-      showAlert(err.message, 'error');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao remover';
+      showAlert(errorMessage, 'error');
     } finally {
       setUserToDelete(null);
     }

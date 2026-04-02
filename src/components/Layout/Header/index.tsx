@@ -3,6 +3,7 @@ import { Sun, Moon, ChevronDown, Filter, Bell, FileText, Check } from 'lucide-re
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useNotifications } from '../../../contexts/NotificationContext';
+import type { User } from '../../../types';
 import './styles.css';
 
 const SECTORS = [
@@ -11,7 +12,7 @@ const SECTORS = [
 ];
 
 interface HeaderProps {
-  user?: any;
+  user?: User;
   onLogout?: () => void;
 }
 

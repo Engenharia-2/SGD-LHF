@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import './styles.css';
 import { useAlert } from '../../../contexts/AlertContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import type { User } from '../../../types';
 
 interface LoginProps {
-  onLogin?: (userData: any) => void;
+  onLogin?: (userData: User) => void;
 }
 
 const Login: React.FC<LoginProps> = () => {
@@ -52,9 +53,10 @@ const Login: React.FC<LoginProps> = () => {
         // O payload do login está em data.data
         login(data.data.user, data.data.token);
       }
-    } catch (err: any) {
-      setError(err.message);
-      showAlert(err.message, 'error');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro na autenticação';
+      setError(errorMessage);
+      showAlert(errorMessage, 'error');
     } finally {
       setLoading(false);
     }

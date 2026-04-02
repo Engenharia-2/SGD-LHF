@@ -11,10 +11,11 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
+import type { User } from '../../../types';
 import './styles.css';
 
 interface SidebarProps {
-  user: any;
+  user: User;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {

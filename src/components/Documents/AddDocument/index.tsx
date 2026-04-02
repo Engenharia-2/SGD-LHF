@@ -39,8 +39,9 @@ const AddDocument: React.FC<AddDocumentProps> = ({ onDocumentAdded, user, catego
       await uploadWithData(formData);
       showAlert('Documento enviado para aprovação!', 'success');
       handleCloseModal();
-    } catch (err: any) {
-      showAlert(err.message || 'Erro ao adicionar documento.', 'error');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao adicionar documento.';
+      showAlert(errorMessage, 'error');
     }
   };
 

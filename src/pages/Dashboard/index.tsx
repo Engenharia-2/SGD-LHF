@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import DocumentList from '../../components/Documents/DocumentList';
 import PendingApprovals from '../../components/Documents/PendingApprovals';
 import { documentService } from '../../services/documentService';
-import type { Document } from '../../types';
-import './styles.css';
+import type { Document, User } from '../../types';
 
 interface DashboardProps {
-  user: any;
+  user: User;
   pingResponse: string;
 }
 

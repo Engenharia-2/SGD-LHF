@@ -30,8 +30,9 @@ export const useAddDocument = (user: User, category: DocumentCategory, onDocumen
       const newDoc = await documentService.upload(formData);
       if (onDocumentAdded) onDocumentAdded(newDoc);
       return newDoc;
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro no upload do documento';
+      setError(errorMessage);
       throw err;
     } finally {
       setIsUploading(false);

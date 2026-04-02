@@ -61,13 +61,14 @@ const DocumentList: React.FC<DocumentListProps> = ({
           setEditingDoc(null);
         } else {
           showAlert('Erro ao criar nova versão.', 'error');
-        }
-      } catch (err: any) {
-        showAlert(err.message, 'error');
-      } finally {
-        setIsUpdating(false);
-      }
-    }
+          }
+          } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : 'Erro ao criar nova versão.';
+          showAlert(errorMessage, 'error');
+          } finally {
+          setIsCreatingVersion(false);
+          }
+          };
   };
 
   return (

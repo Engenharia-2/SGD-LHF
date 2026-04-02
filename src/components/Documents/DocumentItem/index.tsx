@@ -37,12 +37,13 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
       await documentService.updateStatus(doc.id, newStatus);
       setCurrentStatus(newStatus as 'Revisão' | 'Aprovado' | 'Obsoleto');
       showAlert('Status atualizado com sucesso!', 'success');
-    } catch (err: any) {
-      showAlert(err.message, 'error');
-    } finally {
-      setIsUpdatingStatus(false);
-    }
-  };
+      } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar status.';
+      showAlert(errorMessage, 'error');
+      } finally {
+      setIsUpdating(false);
+      }
+      };
 
   return (
     <li className="document-item" onClick={() => onView(doc)}>
