@@ -1,41 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import AddDocument from '../../components/Documents/AddDocument';
 import DocumentList from '../../components/Documents/DocumentList';
 import DocumentFilter from '../../components/Documents/DocumentFilter';
-import { useDocuments } from '../../hooks/useDocuments';
-import { useDocumentFilter } from '../../hooks/useDocumentFilter';
-import { useAuth } from '../../contexts/AuthContext';
-import type { Document } from '../../types';
+import { useDocumentPageLogic } from '../../hooks/useDocumentPageLogic';
 import './styles.css';
 
 const Processos: React.FC = () => {
-  const { user, activeSector, canModify } = useAuth();
-
   const { 
-    documents, 
-    fetchDocuments, 
-    addDocument, 
-    updateDocument,
-    deleteDocument,
-    toggleFavorite
-  } = useDocuments(activeSector, 'PROCESSOS');
-
-  // Utilizando o hook de filtragem abstraído
-  const { 
+    user, 
+    activeSector, 
+    canModify, 
     filteredDocuments, 
-    setActiveFilters, 
-    hasActiveFilters 
-  } = useDocumentFilter(documents);
-
-  useEffect(() => {
-    if (activeSector) {
-      fetchDocuments();
-    }
-  }, [activeSector, fetchDocuments]);
-
-  const handleDocumentAdded = (newDoc: Document) => {
-    addDocument(newDoc);
-  };
+    hasActiveFilters,
+    handleFilter, 
+    handleDocumentAdded, 
+    deleteDocument, 
+    updateDocument, 
+    toggleFavorite 
+  } = useDocumentPageLogic('PROCESSOS');
 
   if (!user) return null;
 
@@ -56,7 +38,7 @@ const Processos: React.FC = () => {
         />
       )}
 
-      <DocumentFilter onFilter={setActiveFilters} />
+      <DocumentFilter onFilter={handleFilter} />
 
       <DocumentList 
         documents={filteredDocuments}

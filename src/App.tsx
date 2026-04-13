@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './components/Auth/Login'
 import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
@@ -37,7 +37,7 @@ function App() {
   const isAdminOrManager = user.role === 'Administrador' || user.role === 'Gestor';
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="app-layout">
         <Sidebar user={user} />
         
@@ -66,7 +66,7 @@ function App() {
           </main>
         </div>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 

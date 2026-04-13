@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     <aside className="sidebar">
       <div className="sidebar-header">
         <img 
-          src={theme === 'light' ? '/logotipo2.png' : '/logotipo3.png'} 
+          src={theme === 'light' ? 'logotipo2.png' : 'logotipo3.png'} 
           alt="SGD-LHF Logo" 
           className="sidebar-logo" 
         />

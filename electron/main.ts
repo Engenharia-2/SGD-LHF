@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -14,9 +14,11 @@ console.log('VITE_DEV_SERVER_URL:', VITE_DEV_SERVER_URL)
 console.log('Caminho do Preload:', path.join(__dirname, 'preload.js'))
 
 function createWindow() {
-  const iconPath = process.env.VITE_PUBLIC 
-    ? path.join(process.env.VITE_PUBLIC, 'logotipo2.png')
-    : path.join(__dirname, '../public/logotipo2.png');
+  // Em produção, o diretório base muda. __dirname aponta para dist-electron.
+  // O ícone deve estar em dist/logotipo2.png (Vite move o conteúdo de public para dist no build)
+  const iconPath = process.env.VITE_DEV_SERVER_URL
+    ? path.join(process.env.VITE_PUBLIC!, 'logoLHF3.png')
+    : path.join(__dirname, '../dist/logoLHF3.png');
 
   const win = new BrowserWindow({
     width: 1200,
@@ -26,19 +28,20 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: false, // Necessário para carregar o preload corretamente em alguns ambientes de dev
+      sandbox: false,
     },
     title: 'SGD-LHF - Gerenciamento de Documentos',
   })
 
-  // Handler IPC para teste
-  ipcMain.handle('ping', () => 'pong')
+  // Habilitar DevTools mesmo em produção para depuração (Remover antes da entrega final)
+  win.webContents.openDevTools();
 
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
+  if (process.env.VITE_DEV_SERVER_URL) {
+    win.loadURL(process.env.VITE_DEV_SERVER_URL)
   } else {
-    // Carregando em produção (após o build do Vite)
-    win.loadFile(path.join(process.env.DIST!, 'index.html'))
+    // Caminho relativo ao dist-electron/main.js para encontrar o dist/index.html
+    const indexHtml = path.join(__dirname, '../dist/index.html');
+    win.loadFile(indexHtml);
   }
 }
 

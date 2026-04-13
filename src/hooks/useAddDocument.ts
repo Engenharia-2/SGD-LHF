@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { documentService } from '../services/documentService';
 import type { Document } from '../types';
 
@@ -7,10 +7,18 @@ interface User {
   sector: string;
 }
 
-// Atualizado: Categorias sem siglas técnicas
-export type DocumentCategory = 'PROCESSOS' | 'GESTAO' | 'GERAL';
+// Atualizado: Todas as categorias utilizadas no sistema
+export type DocumentCategory = 
+  | 'PROCESSOS' 
+  | 'GESTAO' 
+  | 'GERAL' 
+  | 'ATAS' 
+  | 'FORMULARIOS' 
+  | 'NORMAS' 
+  | 'RELATORIOS' 
+  | 'TREINAMENTO';
 
-export const useAddDocument = (user: User, category: DocumentCategory, onDocumentAdded?: (doc: Document) => void) => {
+export const useAddDocument = (_user: User, _category: DocumentCategory, onDocumentAdded?: (doc: Document) => void) => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Eye, Check, X, MessageSquare } from 'lucide-react';
-import { documentService } from '../../../services/documentService';
+import { Check, X, MessageSquare, User, FileText, Calendar, Layers } from 'lucide-react';
+import { approvalService } from '../../../services/approvalService';
 import { useAlert } from '../../../contexts/AlertContext';
 import type { Document } from '../../../types';
 import DocumentModal from '../DocumentModal';
@@ -16,7 +16,7 @@ const PendingApprovals: React.FC = () => {
 
   const fetchPending = async () => {
     try {
-      const data = await documentService.listPendingApprovals();
+      const data = await approvalService.listPendingApprovals();
       setPendingDocs(data);
     } catch (err) {
       console.error('Erro ao buscar aprovações pendentes:', err);
@@ -40,7 +40,7 @@ const PendingApprovals: React.FC = () => {
     }
 
     try {
-      await documentService.handleApprovalAction(id, action, rejectionReason);
+      await approvalService.handleApprovalAction(id, action, rejectionReason);
       showAlert(`Documento ${action === 'Aprovado' ? 'aprovado' : 'rejeitado'} com sucesso!`, 'success');
       setRejectionId(null);
       setRejectionReason('');
@@ -64,27 +64,36 @@ const PendingApprovals: React.FC = () => {
       <div className="pending-list">
         {pendingDocs.map(doc => (
           <div key={doc.id} className="pending-item-wrapper">
-            <div className="pending-item">
+            <div className="pending-item" onClick={() => handleView(doc)}>
               <div className="pending-info">
                 <div className="pending-title-row">
-                  <h4>
-                    {doc.doc_code && <span className="pending-doc-code">[{doc.doc_code}] </span>}
-                    {doc.title}
-                  </h4>
-                  <span className="pending-tag">Aguardando sua revisão</span>
+                  <div className="pending-doc-main">
+                    <FileText size={18} className="icon-primary" />
+                    <h4>
+                      {doc.doc_code && <span className="pending-doc-code">[{doc.doc_code}] </span>}
+                      {doc.title}
+                    </h4>
+                  </div>
+                  {/* <span className="pending-tag">Aguardando sua revisão</span> */}
                 </div>
-                <p>Setor: {doc.sector} | Responsável: {doc.responsible} | Versão: {doc.version}</p>
-                <p className="pending-date">Criado em: {new Date(doc.creation_date).toLocaleDateString()}</p>
+                
+                <div className="pending-details-grid">
+                  <div className="detail-item">
+                    <Layers size={14} />
+                    <span>Setor: <strong>{doc.sector}</strong> | Versão: <strong>{doc.version}</strong></span>
+                  </div>
+                  <div className="detail-item">
+                    <User size={14} />
+                    <span>Responsável: <strong>{doc.responsible}</strong></span>
+                  </div>
+                  <div className="detail-item">
+                    <Calendar size={14} />
+                    <span className="pending-date">Criado em: {new Date(doc.creation_date).toLocaleDateString()}</span>
+                  </div>
+                </div>
               </div>
               
-              <div className="pending-actions">
-                <button 
-                  className="btn-icon btn-view" 
-                  onClick={() => handleView(doc)}
-                  title="Visualizar Detalhes"
-                >
-                  <Eye size={20} />
-                </button>
+              <div className="pending-actions" onClick={e => e.stopPropagation()}>
                 <button 
                   className="btn-icon btn-approve-icon" 
                   onClick={() => handleAction(doc.id, 'Aprovado')}
@@ -145,3 +154,4 @@ const PendingApprovals: React.FC = () => {
 };
 
 export default PendingApprovals;
+

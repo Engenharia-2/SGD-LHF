@@ -1,16 +1,17 @@
 .pending-readings-container {
-  margin: 1.5rem 0;
+  margin-bottom: 2rem;
   background-color: var(--bg-card);
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  padding: 1.25rem;
+  padding: 1.5rem;
   box-shadow: var(--shadow);
 }
 
 .pending-readings-title {
-  margin: 0 0 1.25rem 0;
-  font-size: 1.15rem;
-  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text-main);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -19,9 +20,9 @@
 .pending-readings-title .badge {
   background-color: var(--primary-color);
   color: white;
-  padding: 0.2rem 0.6rem;
+  padding: 0.1rem 0.6rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
@@ -39,7 +40,7 @@
   padding: 1rem 1.25rem;
   border-radius: 8px;
   border: 1px solid var(--border-color);
-  transition: transform 0.2s;
+  transition: all 0.2s;
 }
 
 .pending-reading-item:hover {
@@ -50,14 +51,14 @@
 .reading-info {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
   flex: 1;
 }
 
 .reading-user {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   font-size: 0.9rem;
   color: var(--text-primary);
 }
@@ -69,17 +70,17 @@
 .reading-doc {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
+  gap: 0.6rem;
+  font-size: 1.05rem;
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .reading-time {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.8rem;
+  gap: 0.5rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 
@@ -89,26 +90,25 @@
   gap: 0.75rem;
 }
 
-.btn-confirm-reading {
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: #059669;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.2s;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-confirm-reading:hover {
-  background-color: #047857;
-  transform: scale(1.02);
+.btn-approve-icon {
+  color: #27ae60;
 }
 
-.btn-confirm-reading svg {
-  stroke-width: 3;
+.btn-approve-icon:hover {
+  color: #2ecc71;
+  background: rgba(46, 204, 113, 0.15);
 }
+

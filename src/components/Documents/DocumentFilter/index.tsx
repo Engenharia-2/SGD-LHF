@@ -118,7 +118,6 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({ onFilter }) => {
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
             >
               <option value="">Todos os Status</option>
-              <option value="Revisão">Revisão</option>
               <option value="Aprovado">Aprovado</option>
               <option value="Obsoleto">Obsoleto</option>
             </select>

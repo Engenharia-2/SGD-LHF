@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import './styles.css';
 import type { Document } from '../../../types';
 import { X } from 'lucide-react';
@@ -21,6 +21,7 @@ interface DocumentListProps {
   onDelete?: (id: number) => void;
   onUpdate?: (id: number, formData: FormData) => Promise<boolean>;
   onToggleFavorite?: (id: number, currentStatus: boolean) => void;
+  compact?: boolean;
 }
 
 const DocumentList: React.FC<DocumentListProps> = ({ 
@@ -30,7 +31,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
   emptyMessage = "Nenhum documento encontrado.",
   onDelete,
   onUpdate,
-  onToggleFavorite
+  onToggleFavorite,
 }) => {
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
   const [viewingDoc, setViewingDoc] = useState<Document | null>(null);
@@ -43,15 +44,27 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
   const canModify = user.role === 'Administrador' || user.role === 'Gestor';
 
-  const handleConfirmDelete = () => {
+  const handleView = useCallback((document: Document) => {
+    setViewingDoc(document);
+  }, []);
+
+  const handleEdit = useCallback((document: Document) => {
+    setEditingDoc(document);
+  }, []);
+
+  const handleDeleteClick = useCallback((id: number) => {
+    setDocToDelete(id);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
     if (docToDelete && onDelete) {
       onDelete(docToDelete);
       showAlert("Documento e todas as suas versões excluídos.", "success");
       setDocToDelete(null);
     }
-  };
+  }, [docToDelete, onDelete, showAlert]);
 
-  const handleUpdateSubmit = async (formData: FormData) => {
+  const handleUpdateSubmit = useCallback(async (formData: FormData) => {
     if (editingDoc && onUpdate) {
       setIsUpdating(true);
       try {
@@ -61,15 +74,15 @@ const DocumentList: React.FC<DocumentListProps> = ({
           setEditingDoc(null);
         } else {
           showAlert('Erro ao criar nova versão.', 'error');
-          }
-          } catch (err: unknown) {
-          const errorMessage = err instanceof Error ? err.message : 'Erro ao criar nova versão.';
-          showAlert(errorMessage, 'error');
-          } finally {
-          setIsCreatingVersion(false);
-          }
-          };
-  };
+        }
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao criar nova versão.';
+        showAlert(errorMessage, 'error');
+      } finally {
+        setIsUpdating(false);
+      }
+    }
+  }, [editingDoc, onUpdate, showAlert]);
 
   return (
     <div className="document-list-container">
@@ -85,9 +98,9 @@ const DocumentList: React.FC<DocumentListProps> = ({
               key={doc.id}
               doc={doc}
               canModify={canModify}
-              onView={(document) => setViewingDoc(document)}
-              onEdit={(document) => setEditingDoc(document)}
-              onDelete={(id) => setDocToDelete(id)}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDeleteClick}
               onToggleFavorite={onToggleFavorite}
             />
           ))}

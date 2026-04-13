@@ -1,48 +1,55 @@
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  color: var(--text-main);
-  gap: 2rem;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
 }
 
-.dashboard-header {
+.dashboard-header-simple {
   display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 0.5rem 1.5rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1rem;
 }
 
-.dashboard-header > div {
-  flex: 1;
-  min-width: 300px;
+.welcome-section h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--primary-color);
 }
 
-.status-card {
-  background-color: var(--bg-card);
-  color: var(--text-main);
-  padding: 1.5rem;
-  border-radius: 8px;
-  text-align: left;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
+.welcome-section p {
+  margin: 0.2rem 0 0 0;
+  color: var(--text-secondary);
 }
 
-.status {
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-weight: bold;
+.info-section p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
 }
 
-.status.success {
-  background-color: rgba(46, 164, 79, 0.2);
-  color: #2ea44f;
+/* Grid para as listas de pendências do gestor */
+.dashboard-pending-grid, .dashboard-user-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
 }
 
-.module-card {
-  background: var(--bg-card);
-  color: var(--text-main);
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  text-align: left;
-  border: 1px solid var(--border-color);
+/* Em telas maiores que 1100px, as listas ficam lado a lado */
+@media (min-width: 1100px) {
+  .dashboard-pending-grid, .dashboard-user-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
+
+/* Garante que os containers internos ocupem a mesma altura se necessário */
+.dashboard-pending-grid > div, .dashboard-user-grid > div {
+  height: 100%;
+  margin: 0 !important;
+}
+
+

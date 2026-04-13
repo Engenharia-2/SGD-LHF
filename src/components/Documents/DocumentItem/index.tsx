@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Eye, Pencil, Trash2, Star } from 'lucide-react';
+import React, { useState, useMemo, memo } from 'react';
+import { Pencil, Trash2, Star } from 'lucide-react';
 import type { Document } from '../../../types';
 import { documentService } from '../../../services/documentService';
 import { useAlert } from '../../../contexts/AlertContext';
@@ -27,7 +27,9 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const { showAlert } = useAlert();
   
-  const currentView = doc.history?.find(v => v.id === selectedVersionId) || doc;
+  const currentView = useMemo(() => {
+    return doc.history?.find(v => v.id === selectedVersionId) || doc;
+  }, [doc, selectedVersionId]);
 
   const handleStatusChange = async (newStatus: string) => {
     if (!canModify) return;
@@ -37,13 +39,13 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
       await documentService.updateStatus(doc.id, newStatus);
       setCurrentStatus(newStatus as 'Revisão' | 'Aprovado' | 'Obsoleto');
       showAlert('Status atualizado com sucesso!', 'success');
-      } catch (err: unknown) {
+    } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar status.';
       showAlert(errorMessage, 'error');
-      } finally {
-      setIsUpdating(false);
-      }
-      };
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
   return (
     <li className="document-item" onClick={() => onView(doc)}>
@@ -132,4 +134,5 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   );
 };
 
-export default DocumentItem;
+export default memo(DocumentItem);
+

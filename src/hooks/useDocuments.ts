@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { documentService } from '../services/documentService';
+import { favoriteService } from '../services/favoriteService';
 import type { Document } from '../types';
 
 export const useDocuments = (sector: string, category: string) => {
@@ -22,11 +23,11 @@ export const useDocuments = (sector: string, category: string) => {
     }
   }, [sector, category]);
 
-  const addDocument = (newDoc: Document) => {
+  const addDocument = useCallback((newDoc: Document) => {
     setDocuments(prev => [newDoc, ...prev]);
-  };
+  }, []);
 
-  const updateDocument = async (id: number, formData: FormData) => {
+  const updateDocument = useCallback(async (id: number, formData: FormData) => {
     try {
       await documentService.update(id, formData);
       // Recarregamos para garantir que pegamos os novos dados do arquivo (size, mimetype etc)
@@ -37,9 +38,9 @@ export const useDocuments = (sector: string, category: string) => {
       setError(message);
       return false;
     }
-  };
+  }, [fetchDocuments]);
 
-  const deleteDocument = async (id: number) => {
+  const deleteDocument = useCallback(async (id: number) => {
     try {
       await documentService.delete(id);
       setDocuments(prev => prev.filter(doc => doc.id !== id));
@@ -49,14 +50,14 @@ export const useDocuments = (sector: string, category: string) => {
       setError(message);
       return false;
     }
-  };
+  }, []);
 
-  const toggleFavorite = async (id: number, currentStatus: boolean) => {
+  const toggleFavorite = useCallback(async (id: number, currentStatus: boolean) => {
     try {
       if (currentStatus) {
-        await documentService.unfavorite(id);
+        await favoriteService.unfavorite(id);
       } else {
-        await documentService.favorite(id);
+        await favoriteService.favorite(id);
       }
       setDocuments(prev => prev.map(doc => 
         doc.id === id ? { ...doc, is_favorite: !currentStatus } : doc
@@ -67,7 +68,7 @@ export const useDocuments = (sector: string, category: string) => {
       setError(message);
       return false;
     }
-  };
+  }, []);
 
   return {
     documents,

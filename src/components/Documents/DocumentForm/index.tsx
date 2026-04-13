@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { User, Document } from '../../../types';
-import { X, FileText, Upload, Plus } from 'lucide-react';
+import { X, FileText, Plus } from 'lucide-react';
 import './styles.css';
 
 interface DocumentFormProps {

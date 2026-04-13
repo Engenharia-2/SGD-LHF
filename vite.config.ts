@@ -7,6 +7,7 @@ import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './', // Essencial para o Electron encontrar arquivos em build (protocolo file://)
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),

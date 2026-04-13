@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Check, User, FileText, Clock } from 'lucide-react';
-import { documentService } from '../../../services/documentService';
+import { readingService } from '../../../services/readingService';
 import { useAlert } from '../../../contexts/AlertContext';
 import './styles.css';
 
@@ -21,7 +21,7 @@ const PendingReadings: React.FC = () => {
 
   const fetchPending = async () => {
     try {
-      const data = await documentService.listPendingReadings();
+      const data = await readingService.listPendingReadings();
       setPendingReadings(data);
     } catch (err: unknown) {
       console.error('Erro ao buscar leituras pendentes:', err);
@@ -36,7 +36,7 @@ const PendingReadings: React.FC = () => {
 
   const handleConfirm = async (id: number) => {
     try {
-      await documentService.confirmReading(id);
+      await readingService.confirmReading(id);
       showAlert('Leitura confirmada com sucesso!', 'success');
       setPendingReadings(prev => prev.filter(r => r.id !== id));
     } catch (err: unknown) {
@@ -74,12 +74,11 @@ const PendingReadings: React.FC = () => {
             
             <div className="reading-actions">
               <button 
-                className="btn-confirm-reading" 
+                className="btn-icon btn-approve-icon" 
                 onClick={() => handleConfirm(reading.id)}
                 title="Confirmar Leitura"
               >
-                <Check size={18} />
-                Confirmar
+                <Check size={20} />
               </button>
             </div>
           </div>
