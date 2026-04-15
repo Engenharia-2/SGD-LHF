@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './styles.css';
 import { useAlert } from '../../../contexts/AlertContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { AVAILABLE_SECTORS, USER_ROLES } from '../../../utils/constants';
 import type { User } from '../../../types';
 
 interface LoginProps {
@@ -12,8 +13,8 @@ const Login: React.FC<LoginProps> = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [sector, setSector] = useState('Geral');
-  const [role, setRole] = useState('Funcionario');
+  const [sector, setSector] = useState<string>(AVAILABLE_SECTORS[0]);
+  const [role, setRole] = useState<string>(USER_ROLES[2]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -104,14 +105,9 @@ const Login: React.FC<LoginProps> = () => {
                   value={sector} 
                   onChange={(e) => setSector(e.target.value)}
                 >
-                  <option value="Qualidade">Qualidade</option>
-                  <option value="Produção">Produção</option>
-                  <option value="Administrativo">Administrativo</option>
-                  <option value="Vendas">Vendas</option>
-                  <option value="Assistência">Assistência</option>
-                  <option value="Estoque">Estoque</option>
-                  <option value="Engenharia">Engenharia</option>
-                  <option value="Geral">Geral</option>
+                  {AVAILABLE_SECTORS.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
                 </select>
               </div>
 
@@ -122,9 +118,9 @@ const Login: React.FC<LoginProps> = () => {
                   value={role} 
                   onChange={(e) => setRole(e.target.value)}
                 >
-                  <option value="Administrador">Administrador</option>
-                  <option value="Gestor">Gestor</option>
-                  <option value="Funcionario">Funcionario</option>
+                  {USER_ROLES.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
                 </select>
               </div>
             </>

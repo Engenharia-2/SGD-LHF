@@ -1,52 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, X, Check } from 'lucide-react';
-import { codeService } from '../../../services/codeService';
+import { useCodeManager } from '../../../hooks/useCodeManager';
 import type { DocumentCode } from '../../../services/codeService';
 import './styles.css';
 
 const CodeManager: React.FC = () => {
-  const [codes, setCodes] = useState<DocumentCode[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { codes, loading, createCode, updateCode, deleteCode } = useCodeManager();
+  
   const [showModal, setShowModal] = useState(false);
   const [editingCode, setEditingCode] = useState<DocumentCode | null>(null);
   
   const [prefix, setPrefix] = useState('');
   const [description, setDescription] = useState('');
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchCodes = async () => {
-    try {
-      const data = await codeService.list();
-      setCodes(data);
-    } catch (err: any) {
-      console.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCodes();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    try {
-      if (editingCode) {
-        await codeService.update(editingCode.id, prefix, description);
-      } else {
-        await codeService.create(prefix, description);
-      }
-      setShowModal(false);
-      setPrefix('');
-      setDescription('');
-      setEditingCode(null);
-      fetchCodes();
-    } catch (err: any) {
-      setError(err.message);
+    let success = false;
+    if (editingCode) {
+      success = await updateCode(editingCode.id, prefix, description);
+    } else {
+      success = await createCode(prefix, description);
     }
+
+    if (success) {
+      handleCloseModal();
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setPrefix('');
+    setDescription('');
+    setEditingCode(null);
   };
 
   const handleEdit = (code: DocumentCode) => {
@@ -56,14 +42,9 @@ const CodeManager: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteItem = async (id: number) => {
     if (window.confirm('Tem certeza que deseja excluir este código?')) {
-      try {
-        await codeService.delete(id);
-        fetchCodes();
-      } catch (err: any) {
-        alert(err.message);
-      }
+      await deleteCode(id);
     }
   };
 
@@ -102,7 +83,7 @@ const CodeManager: React.FC = () => {
                     <button className="btn-edit" onClick={() => handleEdit(code)} title="Editar">
                       <Edit2 size={16} />
                     </button>
-                    <button className="btn-delete" onClick={() => handleDelete(code.id)} title="Excluir">
+                    <button className="btn-delete" onClick={() => handleDeleteItem(code.id)} title="Excluir">
                       <Trash2 size={16} />
                     </button>
                   </td>
@@ -118,16 +99,9 @@ const CodeManager: React.FC = () => {
           <div className="admin-modal-content">
             <div className="modal-header">
               <h4>{editingCode ? 'Editar Código' : 'Cadastrar Novo Código'}</h4>
-              <button onClick={() => {
-                setShowModal(false);
-                setEditingCode(null);
-                setPrefix('');
-                setDescription('');
-                setError(null);
-              }}><X size={20} /></button>
+              <button onClick={handleCloseModal}><X size={20} /></button>
             </div>
             <form onSubmit={handleSubmit}>
-              {error && <p className="error-message">{error}</p>}
               <div className="form-group">
                 <label>Prefixo (Sigla)</label>
                 <input 

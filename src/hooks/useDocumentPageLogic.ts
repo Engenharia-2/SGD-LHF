@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useDocuments } from './useDocuments';
 import { useDocumentFilter } from './useDocumentFilter';
-import type { Document } from '../types';
+import type { Document, Filters } from '../types';
 
 /**
  * Hook de orquestração para páginas de documentos (Processos, Normas, Atas, etc.)
@@ -41,7 +41,7 @@ export const useDocumentPageLogic = (category: string) => {
   }, [addDocument]);
 
   // Handler de filtragem (Memoizado) - Resolve a sua sugestão específica
-  const handleFilter = useCallback((filters: any) => {
+  const handleFilter = useCallback((filters: Filters) => {
     setActiveFilters(filters);
   }, [setActiveFilters]);
 

@@ -1,9 +1,9 @@
-export type UserRole = 'Administrador' | 'Gestor' | 'Funcionario';
+import type { UserRole, Sector } from '../utils/constants';
 
 export interface User {
   id: number;
   username: string;
-  sector: string;
+  sector: Sector;
   role: UserRole;
   is_authorized?: boolean;
 }
@@ -53,4 +53,13 @@ export interface Notification {
   type: NotificationType;
   is_read: boolean;
   created_at: string;
+}
+
+export interface Filters {
+  doc_code: string;
+  title: string;
+  responsible: string;
+  date: string;
+  version: string;
+  status: string;
 }

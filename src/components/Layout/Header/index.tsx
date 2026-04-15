@@ -6,10 +6,7 @@ import { useNotifications } from '../../../contexts/NotificationContext';
 import type { User } from '../../../types';
 import './styles.css';
 
-const SECTORS = [
-  "Qualidade", "Produção", "Administrativo", "Vendas", 
-  "Assistência", "Estoque", "Engenharia", "Geral"
-];
+import { AVAILABLE_SECTORS } from '../../../utils/constants';
 
 interface HeaderProps {
   user?: User;
@@ -72,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ user: _userProp, onLogout: _onLogoutPro
               value={activeSector} 
               onChange={(e) => changeSector(e.target.value)}
             >
-              {SECTORS.map(s => (
+              {AVAILABLE_SECTORS.map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>

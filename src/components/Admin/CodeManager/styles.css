@@ -67,16 +67,24 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  padding: 8px;
+  border-radius: 50%;
+  color: var(--text-secondary, #95a5a6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.btn-edit { color: var(--primary-color); }
-.btn-edit:hover { background-color: rgba(67, 97, 238, 0.1); }
+.btn-edit:hover { 
+  color: var(--primary-color);
+  background-color: rgba(67, 97, 238, 0.1); 
+}
 
-.btn-delete { color: #e63946; }
-.btn-delete:hover { background-color: rgba(230, 57, 70, 0.1); }
+.btn-delete:hover { 
+  color: #e63946;
+  background-color: rgba(230, 57, 70, 0.1); 
+}
 
 .empty-row {
   text-align: center;

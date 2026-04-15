@@ -152,8 +152,8 @@
 }
 
 .btn-edit:hover {
-  color: #2ecc71;
-  background: rgba(46, 204, 113, 0.15);
+  color: var(--primary-color);
+  background: rgba(67, 97, 238, 0.15);
 }
 
 .btn-delete:hover {

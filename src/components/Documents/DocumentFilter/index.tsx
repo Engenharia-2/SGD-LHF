@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import type { Filters } from '../../../types';
 import './styles.css';
 import { Search, RotateCcw, Filter } from 'lucide-react';
-
-interface Filters {
-  doc_code: string;
-  title: string;
-  responsible: string;
-  date: string;
-  version: string;
-  status: string;
-}
 
 interface DocumentFilterProps {
   onFilter: (filters: Filters) => void;
@@ -135,4 +127,3 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({ onFilter }) => {
 };
 
 export default DocumentFilter;
-export type { Filters };

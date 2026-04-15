@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { User, Document } from '../../../types';
 import { codeService } from '../../../services/codeService';
-import type { DocumentCode } from '../../../services/codeService';
+import type { DocumentCode} from '../../../services/codeService';
+import { AVAILABLE_SECTORS } from '../../../utils/constants';
 import { X, FileText, Plus } from 'lucide-react';
 import './styles.css';
 
@@ -17,11 +18,6 @@ interface DocumentFormProps {
   onCancel: () => void;
   isUploading: boolean;
 }
-
-const AVAILABLE_SECTORS = [
-  'Qualidade', 'Produção', 'Administrativo', 'Vendas', 
-  'Assistência', 'Estoque', 'Engenharia', 'Geral'
-];
 
 const DocumentForm: React.FC<DocumentFormProps> = ({ 
   initialData, 
