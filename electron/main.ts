@@ -17,8 +17,8 @@ function createWindow() {
   // Em produção, o diretório base muda. __dirname aponta para dist-electron.
   // O ícone deve estar em dist/logotipo2.png (Vite move o conteúdo de public para dist no build)
   const iconPath = process.env.VITE_DEV_SERVER_URL
-    ? path.join(process.env.VITE_PUBLIC!, 'logoLHF3.png')
-    : path.join(__dirname, '../dist/logoLHF3.png');
+    ? path.join(process.cwd(), 'public', 'logo-SGD.png')
+    : path.join(__dirname, '../dist/logo-SGD.png');
 
   const win = new BrowserWindow({
     width: 1200,

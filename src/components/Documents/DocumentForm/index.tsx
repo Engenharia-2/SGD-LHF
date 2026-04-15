@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { User, Document } from '../../../types';
+import { codeService } from '../../../services/codeService';
+import type { DocumentCode } from '../../../services/codeService';
 import { X, FileText, Plus } from 'lucide-react';
 import './styles.css';
 
@@ -39,6 +41,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   };
 
   const [docCode, setDocCode] = useState(initialData?.doc_code || '');
+  const [availableCodes, setAvailableCodes] = useState<DocumentCode[]>([]);
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [version, setVersion] = useState(initialData ? getNextVersion(initialData.version) : '1.0');
@@ -51,6 +54,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // Buscar aprovadores
     fetch(`${import.meta.env.VITE_API_URL}/admin/users`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('sgd_token')}` }
     })
@@ -64,7 +68,18 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
       }
     })
     .catch(err => console.error('Erro ao buscar aprovadores:', err));
-  }, [user.id]);
+
+    // Buscar códigos de registro disponíveis
+    codeService.list()
+      .then(codes => {
+        setAvailableCodes(codes);
+        // Se não for edição e houver códigos, pré-seleciona o primeiro se estiver vazio
+        if (!initialData && codes.length > 0 && !docCode) {
+          setDocCode(codes[0].prefix);
+        }
+      })
+      .catch(err => console.error('Erro ao buscar códigos:', err));
+  }, [user.id, initialData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -107,6 +122,10 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
       setError('Selecione pelo menos um aprovador.');
       return;
     }
+    if (!docCode) {
+      setError('Por favor, selecione um código de registro.');
+      return;
+    }
 
     const formData = new FormData();
     // Suporte a múltiplos arquivos usando a chave 'files'
@@ -143,14 +162,23 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
           <div className="form-row">
             <div className="form-group code-group">
               <label>Código do Registro</label>
-              <input 
-                type="text" 
+              <select 
                 value={docCode}
                 onChange={(e) => setDocCode(e.target.value)}
-                placeholder="Ex: PQS"
                 disabled={!!initialData}
-              />
-              <small className="help-text">Se digitar apenas o prefixo (ex: PQS), o sistema gerará o próximo número.</small>
+                required
+              >
+                {!initialData && <option value="">Selecione um código...</option>}
+                {availableCodes.map(code => (
+                  <option key={code.id} value={code.prefix}>
+                    {code.prefix} - {code.description}
+                  </option>
+                ))}
+                {initialData && !availableCodes.some(c => c.prefix === docCode) && (
+                  <option value={docCode}>{docCode}</option>
+                )}
+              </select>
+              <small className="help-text">O sistema gerará automaticamente o próximo número sequencial para o prefixo escolhido.</small>
             </div>
 
             <div className="form-group title-group">

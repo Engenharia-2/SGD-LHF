@@ -1,5 +1,6 @@
 import React, { Suspense, useMemo } from 'react';
 import AdminList from './AdminList';
+import CodeManager from '../../components/Admin/CodeManager';
 import type { User } from '../../types';
 import './styles.css';
 
@@ -31,6 +32,8 @@ const Admin: React.FC<AdminProps> = () => {
       <Suspense fallback={<div className="loading-placeholder">Carregando lista de usuários...</div>}>
         <AdminList usersPromise={usersPromise} />
       </Suspense>
+
+      <CodeManager />
     </div>
   );
 };

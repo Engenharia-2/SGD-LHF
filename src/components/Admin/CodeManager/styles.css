@@ -1,0 +1,155 @@
+.code-manager-section {
+  margin-top: 30px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-add-code {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-add-code:hover {
+  background-color: var(--primary-hover);
+}
+
+.code-list-container {
+  overflow-x: auto;
+}
+
+.code-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.code-table th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid var(--border-color);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.code-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.code-prefix {
+  color: var(--primary-color);
+}
+
+.actions-cell {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit, .btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-edit { color: var(--primary-color); }
+.btn-edit:hover { background-color: rgba(67, 97, 238, 0.1); }
+
+.btn-delete { color: #e63946; }
+.btn-delete:hover { background-color: rgba(230, 57, 70, 0.1); }
+
+.empty-row {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 30px !important;
+}
+
+/* Modais (reaproveitando estilos do admin se possível, mas garantindo locais) */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.admin-modal-content {
+  background-color: var(--card-bg, #ffffff);
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: relative;
+  border: 1px solid var(--border-color, #eee);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h4 { margin: 0; color: var(--text-primary); }
+.modal-header button { background: none; border: none; cursor: pointer; color: var(--text-secondary); }
+
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-secondary);
+}
+
+.modal-footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.error-message {
+  color: #e63946;
+  background-color: rgba(230, 57, 70, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}

@@ -22,7 +22,7 @@
       "dist-electron"
     ],
     "win": {
-      "icon": "public/logoLHF3.png",
+      "icon": "public/logo-SGD.png",
       "target": [
         {
           "target": "nsis",

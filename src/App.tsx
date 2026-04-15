@@ -4,7 +4,6 @@ import Login from './components/Auth/Login'
 import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
 import Dashboard from './pages/Dashboard'
-import Processos from './pages/Processos'
 import Relatorios from './pages/Relatorios'
 import Treinamento from './pages/Treinamento'
 import Normas from './pages/Normas'
@@ -47,7 +46,6 @@ function App() {
           <main className="content-area">
             <Routes>
               <Route path="/" element={<Dashboard user={user} pingResponse={pingResponse} />} />
-              <Route path="/processos" element={<Processos />} />
               <Route path="/relatorios" element={<Relatorios />} />
               <Route path="/treinamento" element={<Treinamento />} />
               <Route path="/normas" element={<Normas />} />

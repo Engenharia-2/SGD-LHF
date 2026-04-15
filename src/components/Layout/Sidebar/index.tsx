@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  FileText, 
   BarChart3, 
   GraduationCap, 
   BookOpen, 
@@ -40,9 +39,15 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/processos" className={({ isActive }) => (isActive ? 'active' : '')}>
-              <FileText size={20} />
-              <span>Processos</span>
+            <NavLink to="/normas" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <BookOpen size={20} />
+              <span>Normas</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/formularios" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <FileSpreadsheet size={20} />
+              <span>Formulários</span>
             </NavLink>
           </li>
           <li>
@@ -52,27 +57,15 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/treinamento" className={({ isActive }) => (isActive ? 'active' : '')}>
-              <GraduationCap size={20} />
-              <span>Treinamento</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/normas" className={({ isActive }) => (isActive ? 'active' : '')}>
-              <BookOpen size={20} />
-              <span>Normas</span>
-            </NavLink>
-          </li>
-          <li>
             <NavLink to="/atas" className={({ isActive }) => (isActive ? 'active' : '')}>
               <ClipboardList size={20} />
               <span>Atas</span>
             </NavLink>
           </li>
           <li>
-            <NavLink to="/formularios" className={({ isActive }) => (isActive ? 'active' : '')}>
-              <FileSpreadsheet size={20} />
-              <span>Formulários</span>
+            <NavLink to="/treinamento" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <GraduationCap size={20} />
+              <span>Treinamento</span>
             </NavLink>
           </li>
           {isAdminOrManager && (
