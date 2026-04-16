@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { User, Document } from '../../../types';
 import { codeService } from '../../../services/codeService';
-import type { DocumentCode} from '../../../services/codeService';
+import { userService } from '../../../services/userService';
+import type { DocumentCode } from '../../../services/codeService';
 import { AVAILABLE_SECTORS } from '../../../utils/constants';
 import { X, FileText, Plus } from 'lucide-react';
 import './styles.css';
@@ -50,20 +51,15 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Buscar aprovadores
-    fetch(`${import.meta.env.VITE_API_URL}/admin/users`, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('sgd_token')}` }
-    })
-    .then(res => res.json())
-    .then(result => {
-      if (result.status === 'success' && Array.isArray(result.data)) {
-        const approvers = result.data.filter((u: User) => 
+    // Buscar aprovadores usando o serviço
+    userService.listAll()
+      .then(users => {
+        const approvers = users.filter((u: User) => 
           (u.role === 'Gestor' || u.role === 'Administrador') && u.id !== user.id
         );
         setAvailableApprovers(approvers);
-      }
-    })
-    .catch(err => console.error('Erro ao buscar aprovadores:', err));
+      })
+      .catch(err => console.error('Erro ao buscar aprovadores:', err));
 
     // Buscar códigos de registro disponíveis
     codeService.list()

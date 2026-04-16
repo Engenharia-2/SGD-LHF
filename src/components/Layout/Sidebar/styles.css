@@ -66,9 +66,33 @@
 }
 
 .sidebar-footer {
-  padding: 1rem;
+  padding: 1rem 1.5rem;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
-  text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-footer p {
+  margin: 0;
+}
+
+.sidebar-settings-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.sidebar-settings-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }

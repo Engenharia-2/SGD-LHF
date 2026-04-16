@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -7,9 +7,11 @@ import {
   BookOpen, 
   ClipboardList, 
   FileSpreadsheet,
-  ShieldCheck 
+  ShieldCheck,
+  Settings
 } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
+import ChangePasswordModal from '../../Auth/ChangePasswordModal';
 import type { User } from '../../../types';
 import './styles.css';
 
@@ -20,6 +22,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const isAdminOrManager = user?.role === 'Administrador' || user?.role === 'Gestor';
   const { theme } = useTheme();
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   return (
     <aside className="sidebar">
@@ -80,7 +83,19 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       </nav>
       <div className="sidebar-footer">
         <p>Versão 1.0.0</p>
+        <button 
+          className="sidebar-settings-btn" 
+          onClick={() => setIsChangePasswordOpen(true)}
+          title="Alterar Senha"
+        >
+          <Settings size={18} />
+        </button>
       </div>
+
+      <ChangePasswordModal 
+        isOpen={isChangePasswordOpen} 
+        onClose={() => setIsChangePasswordOpen(false)} 
+      />
     </aside>
   );
 };

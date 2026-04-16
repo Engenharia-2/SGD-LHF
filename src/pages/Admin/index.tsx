@@ -1,6 +1,7 @@
 import React, { Suspense, useMemo } from 'react';
-import AdminList from './AdminList';
+import AdminList from '../../components/Admin/AdminList';
 import CodeManager from '../../components/Admin/CodeManager';
+import { userService } from '../../services/userService';
 import type { User } from '../../types';
 import './styles.css';
 
@@ -8,29 +9,15 @@ interface AdminProps {
   user: User;
 }
 
-// Função auxiliar para buscar usuários (Pode ser movida para um Service depois)
-const fetchUsersPromise = async (): Promise<User[]> => {
-  const token = localStorage.getItem('sgd_token');
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/users`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.message || 'Erro ao carregar usuários');
-  return data.data;
-};
-
-const Admin: React.FC<AdminProps> = () => {
+const Admin: React.FC<AdminProps> = ({ user }) => {
   // Criamos a promise uma única vez ou quando necessário
-  const usersPromise = useMemo(() => fetchUsersPromise(), []);
+  const usersPromise = useMemo(() => userService.listAll(), []);
 
   return (
     <div className="admin-container">
       <h2>Painel Administrativo</h2>
       <Suspense fallback={<div className="loading-placeholder">Carregando lista de usuários...</div>}>
-        <AdminList usersPromise={usersPromise} />
+        <AdminList usersPromise={usersPromise} currentUser={user} />
       </Suspense>
 
       <CodeManager />

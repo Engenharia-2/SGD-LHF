@@ -3,6 +3,7 @@ import './styles.css';
 import { useAlert } from '../../../contexts/AlertContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { AVAILABLE_SECTORS, USER_ROLES } from '../../../utils/constants';
+import { authService } from '../../../services/authService';
 import type { User } from '../../../types';
 
 interface LoginProps {
@@ -28,23 +29,14 @@ const Login: React.FC<LoginProps> = () => {
     setError('');
     setLoading(true);
 
-    const endpoint = isRegistering ? '/auth/register' : '/auth/login';
     const payload = isRegistering 
       ? { username, password, sector, role } 
       : { username, password };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro na autenticação');
-      }
+      const data = isRegistering 
+        ? await authService.register(payload)
+        : await authService.login(payload);
 
       if (isRegistering) {
         showAlert(data.message || 'Conta criada com sucesso! Faça login.', 'success');
@@ -95,6 +87,18 @@ const Login: React.FC<LoginProps> = () => {
               placeholder="Digite sua senha"
             />
           </div>
+
+          {!isRegistering && (
+            <div className="forgot-password-container">
+              <button 
+                type="button" 
+                className="forgot-password-btn"
+                onClick={() => showAlert('Para redefinir sua senha, por favor entre em contato com o administrador do sistema ou o gestor do seu setor.', 'info', 10000)}
+              >
+                Esqueceu a senha?
+              </button>
+            </div>
+          )}
 
           {isRegistering && (
             <>

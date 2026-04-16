@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { useAlert } from './AlertContext';
+import { notificationService } from '../services/notificationService';
 import type { Notification } from '../types';
 
 interface NotificationContextData {
@@ -20,48 +21,28 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
-  const getHeaders = useCallback(() => {
-    const token = localStorage.getItem('sgd_token');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
-  }, []);
-
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/notifications/${user.id}/${user.sector}`, {
-        headers: getHeaders()
-      });
-      if (response.ok) {
-        const result = await response.json();
-        const data: Notification[] = result.data;
-        // Garantir que is_read seja booleano
-        setNotifications(data.map(n => ({ ...n, is_read: !!n.is_read })));
-      }
+      const result = await notificationService.getNotifications(user.id, user.sector);
+      const data: Notification[] = result.data;
+      // Garantir que is_read seja booleano
+      setNotifications(data.map(n => ({ ...n, is_read: !!n.is_read })));
     } catch (err) {
       console.error('Erro ao carregar notificações:', err);
     }
-  }, [user, getHeaders]);
+  }, [user]);
 
   const markAsRead = async (id: number) => {
     if (!user || !user.id) return;
     
     try {
-      const url = `${import.meta.env.VITE_API_URL}/notifications/read/${user.id}/${id}`;
-      const response = await fetch(url, { 
-        method: 'POST',
-        headers: getHeaders()
-      });
-      
-      if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => n.id === id ? { ...n, is_read: true } : n)
-        );
-      }
+      await notificationService.markAsRead(id, user.id);
+      setNotifications(prev => 
+        prev.map(n => n.id === id ? { ...n, is_read: true } : n)
+      );
     } catch (err) {
-      console.error('Erro de rede ao marcar como lida:', err);
+      console.error('Erro ao marcar como lida:', err);
     }
   };
 
@@ -72,12 +53,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   useEffect(() => {
     if (user) {
       fetchNotifications();
-
-      // SSE precisa de autenticação também? 
-      // EventSource nativo não suporta headers customizados facilmente.
-      // Mas nas rotas eu adicionei authenticateJWT. 
-      // Para simplificar, vou remover authenticateJWT apenas da rota /stream se necessário, 
-      // ou usar um workaround. 
       
       const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/notifications/stream/${user.sector}`);
 

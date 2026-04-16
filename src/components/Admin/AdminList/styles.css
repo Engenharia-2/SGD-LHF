@@ -80,6 +80,11 @@
   color: white;
 }
 
+.btn-action.reset {
+  background-color: #f39c12;
+  color: white;
+}
+
 .btn-action.reject {
   background-color: #dc3545;
   color: white;

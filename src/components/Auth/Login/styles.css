@@ -53,6 +53,26 @@
   border-color: #3498db;
 }
 
+.forgot-password-container {
+  text-align: right;
+  margin-top: -0.8rem;
+  margin-bottom: 1rem;
+}
+
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: #7f8c8d;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.forgot-password-btn:hover {
+  color: #34495e;
+  text-decoration: underline;
+}
+
 .btn-primary {
   width: 100%;
   padding: 0.8rem;
