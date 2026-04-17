@@ -8,7 +8,7 @@ export interface User {
   is_authorized?: boolean;
 }
 
-export type DocumentStatus = 'Revisão' | 'Aprovado' | 'Obsoleto';
+export type DocumentStatus = 'Revisão' | 'Aprovado' | 'Obsoleto' | 'Rejeitado' | 'Exclusão';
 
 export interface Document {
   id: number;
@@ -22,6 +22,8 @@ export interface Document {
   sector: string;
   category: string;
   responsible: string;
+  revision_period_years?: number;
+  next_revision_date?: string | null;
   version: string;
   status: DocumentStatus;
   creation_date: string;

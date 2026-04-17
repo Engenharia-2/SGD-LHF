@@ -54,6 +54,16 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
+.pending-item.is-exclusion {
+  background: #fff5f5;
+  border-color: #feb2b2;
+}
+
+.pending-item.is-exclusion:hover {
+  background: #fff0f0;
+  border-color: #f56565;
+}
+
 .pending-info {
   display: flex;
   flex-direction: column;
@@ -102,6 +112,12 @@
   font-weight: 700;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.exclusion-tag {
+  background: rgba(231, 76, 60, 0.1);
+  color: #c0392b;
+  border: 1px solid rgba(231, 76, 60, 0.2);
 }
 
 .pending-details-grid {

@@ -42,6 +42,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [version, setVersion] = useState(initialData ? getNextVersion(initialData.version) : '1.0');
+  const [revisionPeriod, setRevisionPeriod] = useState<number>(initialData?.revision_period_years || 0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [approverIds, setApproverIds] = useState<number[]>([]);
   const [targetSectors, setTargetSectors] = useState<string[]>(initialData?.sector ? [initialData.sector] : [user.sector]);
@@ -132,6 +133,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
     formData.append('category', category);
     formData.append('responsible', user.username);
     formData.append('version', version);
+    formData.append('revision_period_years', revisionPeriod.toString());
     formData.append('status', 'Revisão');
     formData.append('creation_date', new Date().toISOString().split('T')[0]);
     formData.append('approverIds', JSON.stringify(approverIds));
@@ -195,15 +197,31 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             />
           </div>
 
-          <div className="form-group">
-            <label>Versão</label>
-            <input 
-              type="text" 
-              value={version}
-              onChange={(e) => setVersion(e.target.value)}
-              placeholder="1.0"
-              required
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label>Versão</label>
+              <input 
+                type="text" 
+                value={version}
+                onChange={(e) => setVersion(e.target.value)}
+                placeholder="1.0"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Periodicidade de Revisão</label>
+              <select 
+                value={revisionPeriod}
+                onChange={(e) => setRevisionPeriod(Number(e.target.value))}
+              >
+                <option value={0}>Sem revisão agendada</option>
+                <option value={1}>1 Ano</option>
+                <option value={2}>2 Anos</option>
+                <option value={3}>3 Anos</option>
+                <option value={4}>4 Anos</option>
+                <option value={5}>5 Anos</option>
+              </select>
+            </div>
           </div>
 
           <div className="form-group file-upload-group">

@@ -56,11 +56,17 @@ const DocumentList: React.FC<DocumentListProps> = ({
     setDocToDelete(id);
   }, []);
 
-  const handleConfirmDelete = useCallback(() => {
+  const handleConfirmDelete = useCallback(async () => {
     if (docToDelete && onDelete) {
-      onDelete(docToDelete);
-      showAlert("Documento e todas as suas versões excluídos.", "success");
-      setDocToDelete(null);
+      try {
+        await onDelete(docToDelete);
+        showAlert("Solicitação processada com sucesso!", "success");
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao processar solicitação.';
+        showAlert(errorMessage, "error");
+      } finally {
+        setDocToDelete(null);
+      }
     }
   }, [docToDelete, onDelete, showAlert]);
 
@@ -139,11 +145,11 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
       <ConfirmModal 
         isOpen={docToDelete !== null}
-        title="Excluir Documento"
-        message="Tem certeza que deseja excluir este documento permanentemente?"
+        title="Solicitar Exclusão"
+        message="Esta ação enviará uma solicitação de exclusão para o responsável pelo documento. Ele precisará aprovar para que o registro seja removido definitivamente. Continuar?"
         onConfirm={handleConfirmDelete}
         onCancel={() => setDocToDelete(null)}
-        confirmText="Excluir"
+        confirmText="Solicitar"
       />
     </div>
   );

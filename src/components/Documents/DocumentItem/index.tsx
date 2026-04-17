@@ -32,12 +32,12 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   }, [doc, selectedVersionId]);
 
   const handleStatusChange = async (newStatus: string) => {
-    if (!canModify) return;
+    if (!canModify || currentStatus === 'Exclusão') return;
     
     setIsUpdatingStatus(true);
     try {
       await documentService.updateStatus(doc.id, newStatus);
-      setCurrentStatus(newStatus as 'Revisão' | 'Aprovado' | 'Obsoleto');
+      setCurrentStatus(newStatus as DocumentStatus);
       showAlert('Status atualizado com sucesso!', 'success');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar status.';
@@ -47,12 +47,15 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
     }
   };
 
+  const isExclusionPending = currentStatus === 'Exclusão';
+
   return (
-    <li className="document-item" onClick={() => onView(doc)}>
+    <li className={`document-item ${isExclusionPending ? 'exclusion-pending' : ''}`} onClick={() => onView(doc)}>
       <div className="doc-favorite" onClick={e => e.stopPropagation()}>
         <button 
           className={`btn-icon btn-favorite ${doc.is_favorite ? 'active' : ''}`}
           onClick={() => onToggleFavorite?.(doc.id, !!doc.is_favorite)}
+          disabled={isExclusionPending}
           title={doc.is_favorite ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
         >
           <Star size={20} fill={doc.is_favorite ? "currentColor" : "none"} />
@@ -66,7 +69,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
           </span>
           
           <div onClick={e => e.stopPropagation()}>
-            {canModify && selectedVersionId === doc.id ? (
+            {canModify && selectedVersionId === doc.id && !isExclusionPending ? (
               <div className="status-selector-wrapper">
                 <select 
                   className={`doc-status-select status-${currentStatus.toLowerCase()}`}
@@ -77,6 +80,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
                 >
                   <option value="Aprovado">Aprovado</option>
                   <option value="Obsoleto">Obsoleto</option>
+                  <option value="Revisão">Revisão</option>
                 </select>
               </div>
             ) : (
@@ -91,6 +95,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
               <select 
                 value={selectedVersionId} 
                 onChange={(e) => setSelectedVersionId(Number(e.target.value))}
+                disabled={isExclusionPending}
                 title="Histórico de Versões"
               >
                 {doc.history.map(v => (
@@ -108,6 +113,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
         <span className="doc-sub-meta">
           {currentView.original_name} | {((currentView.size || 0) / 1024).toFixed(2)} KB
           {selectedVersionId !== doc.id && <strong className="old-version-warning">* Visualizando versão antiga</strong>}
+          {isExclusionPending && <strong className="exclusion-warning">* Aguardando Aprovação de Exclusão</strong>}
         </span>
       </div>
       <div className="doc-actions" onClick={e => e.stopPropagation()}>
@@ -116,14 +122,16 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
             <button 
               className="btn-icon btn-edit" 
               onClick={() => onEdit(doc)}
-              title="Criar Nova Versão"
+              disabled={isExclusionPending}
+              title={isExclusionPending ? "Exclusão Pendente" : "Criar Nova Versão"}
             >
               <Pencil size={18} />
             </button>
             <button 
               className="btn-icon btn-delete" 
               onClick={() => onDelete(doc.id)}
-              title="Excluir Documento (Tudo)"
+              disabled={isExclusionPending}
+              title={isExclusionPending ? "Exclusão Pendente" : "Solicitar Exclusão"}
             >
               <Trash2 size={18} />
             </button>

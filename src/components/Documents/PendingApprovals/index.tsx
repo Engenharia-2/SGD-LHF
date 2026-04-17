@@ -62,87 +62,91 @@ const PendingApprovals: React.FC = () => {
       </h3>
       
       <div className="pending-list">
-        {pendingDocs.map(doc => (
-          <div key={doc.id} className="pending-item-wrapper">
-            <div className="pending-item" onClick={() => handleView(doc)}>
-              <div className="pending-info">
-                <div className="pending-title-row">
-                  <div className="pending-doc-main">
-                    <FileText size={18} className="icon-primary" />
-                    <h4>
-                      {doc.doc_code && <span className="pending-doc-code">[{doc.doc_code}] </span>}
-                      {doc.title}
-                    </h4>
+        {pendingDocs.map(doc => {
+          const isExclusion = doc.status === 'Exclusão';
+          
+          return (
+            <div key={doc.id} className="pending-item-wrapper">
+              <div className={`pending-item ${isExclusion ? 'is-exclusion' : ''}`} onClick={() => handleView(doc)}>
+                <div className="pending-info">
+                  <div className="pending-title-row">
+                    <div className="pending-doc-main">
+                      <FileText size={18} className="icon-primary" />
+                      <h4>
+                        {doc.doc_code && <span className="pending-doc-code">[{doc.doc_code}] </span>}
+                        {doc.title}
+                      </h4>
+                    </div>
+                    {isExclusion && <span className="pending-tag exclusion-tag">Solicitação de Exclusão</span>}
                   </div>
-                  {/* <span className="pending-tag">Aguardando sua revisão</span> */}
+                  
+                  <div className="pending-details-grid">
+                    <div className="detail-item">
+                      <Layers size={14} />
+                      <span>Setor: <strong>{doc.sector}</strong> | Versão: <strong>{doc.version}</strong></span>
+                    </div>
+                    <div className="detail-item">
+                      <User size={14} />
+                      <span>Responsável: <strong>{doc.responsible}</strong></span>
+                    </div>
+                    <div className="detail-item">
+                      <Calendar size={14} />
+                      <span className="pending-date">Criado em: {new Date(doc.creation_date).toLocaleDateString()}</span>
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="pending-details-grid">
-                  <div className="detail-item">
-                    <Layers size={14} />
-                    <span>Setor: <strong>{doc.sector}</strong> | Versão: <strong>{doc.version}</strong></span>
-                  </div>
-                  <div className="detail-item">
-                    <User size={14} />
-                    <span>Responsável: <strong>{doc.responsible}</strong></span>
-                  </div>
-                  <div className="detail-item">
-                    <Calendar size={14} />
-                    <span className="pending-date">Criado em: {new Date(doc.creation_date).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="pending-actions" onClick={e => e.stopPropagation()}>
-                <button 
-                  className="btn-icon btn-approve-icon" 
-                  onClick={() => handleAction(doc.id, 'Aprovado')}
-                  title="Aprovar Documento"
-                >
-                  <Check size={20} />
-                </button>
-                <button 
-                  className="btn-icon btn-reject-icon" 
-                  onClick={() => setRejectionId(doc.id)}
-                  title="Rejeitar Documento"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-
-            {rejectionId === doc.id && (
-              <div className="rejection-form">
-                <div className="rejection-form-header">
-                  <MessageSquare size={16} />
-                  <span>Justificativa da Rejeição</span>
-                </div>
-                <textarea 
-                  value={rejectionReason}
-                  onChange={(e) => setRejectionReason(e.target.value)}
-                  placeholder="Explique detalhadamente o motivo da rejeição para o autor..."
-                  autoFocus
-                />
-                <div className="rejection-form-actions">
-                  <button className="btn-cancel" onClick={() => {
-                    setRejectionId(null);
-                    setRejectionReason('');
-                  }}>
-                    Cancelar
+                <div className="pending-actions" onClick={e => e.stopPropagation()}>
+                  <button 
+                    className="btn-icon btn-approve-icon" 
+                    onClick={() => handleAction(doc.id, 'Aprovado')}
+                    title="Aprovar Documento"
+                  >
+                    <Check size={20} />
                   </button>
                   <button 
-                    className="btn-confirm-rejection" 
-                    onClick={() => handleAction(doc.id, 'Rejeitado')}
+                    className="btn-icon btn-reject-icon" 
+                    onClick={() => setRejectionId(doc.id)}
+                    title="Rejeitar Documento"
                   >
-                    Confirmar Rejeição
+                    <X size={20} />
                   </button>
                 </div>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
 
+              {rejectionId === doc.id && (
+                <div className="rejection-form">
+                  <div className="rejection-form-header">
+                    <MessageSquare size={16} />
+                    <span>Justificativa da Rejeição</span>
+                  </div>
+                  <textarea 
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="Explique detalhadamente o motivo da rejeição para o autor..."
+                    autoFocus
+                  />
+                  <div className="rejection-form-actions">
+                    <button className="btn-cancel" onClick={() => {
+                      setRejectionId(null);
+                      setRejectionReason('');
+                    }}>
+                      Cancelar
+                    </button>
+                    <button 
+                      className="btn-confirm-rejection" 
+                      onClick={() => handleAction(doc.id, 'Rejeitado')}
+                    >
+                      Confirmar Rejeição
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      
       {selectedDoc && (
         <DocumentModal 
           document={selectedDoc} 
@@ -154,4 +158,3 @@ const PendingApprovals: React.FC = () => {
 };
 
 export default PendingApprovals;
-

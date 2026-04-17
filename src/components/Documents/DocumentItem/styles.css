@@ -100,6 +100,33 @@
   color: #fff;
 }
 
+.status-rejeitado {
+  background-color: #95a5a6;
+  color: #fff;
+}
+
+.status-exclusão {
+  background-color: #2c3e50;
+  color: #fff;
+}
+
+.exclusion-pending {
+  border: 1px dashed #e74c3c;
+  opacity: 0.85;
+}
+
+.exclusion-warning {
+  color: #e74c3c;
+  font-weight: 700;
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
 /* Version Selector */
 .version-selector select {
   background: var(--bg-body);
