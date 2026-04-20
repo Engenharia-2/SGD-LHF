@@ -49,18 +49,25 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const [availableApprovers, setAvailableApprovers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   
+  const isRelatorio = category === 'RELATORIOS';
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Buscar aprovadores usando o serviço
+    // Buscar aprovadores (ou leitores se for relatório) usando o serviço
     userService.listAll()
       .then(users => {
-        const approvers = users.filter((u: User) => 
-          (u.role === 'Gestor' || u.role === 'Administrador') && u.id !== user.id
-        );
-        setAvailableApprovers(approvers);
+        if (isRelatorio) {
+          // Para relatórios, todos os usuários ativos podem ser selecionados como leitores
+          setAvailableApprovers(users.filter((u: User) => u.id !== user.id));
+        } else {
+          // Fluxo normal: apenas Gestores e Admins
+          const approvers = users.filter((u: User) => 
+            (u.role === 'Gestor' || u.role === 'Administrador') && u.id !== user.id
+          );
+          setAvailableApprovers(approvers);
+        }
       })
-      .catch(err => console.error('Erro ao buscar aprovadores:', err));
+      .catch(err => console.error('Erro ao buscar usuários:', err));
 
     // Buscar códigos de registro disponíveis
     codeService.list()
@@ -112,7 +119,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
       return;
     }
     if (approverIds.length === 0) {
-      setError('Selecione pelo menos um aprovador.');
+      setError(isRelatorio ? 'Selecione pelo menos um leitor.' : 'Selecione pelo menos um aprovador.');
       return;
     }
     if (!docCode) {
@@ -134,7 +141,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
     formData.append('responsible', user.username);
     formData.append('version', version);
     formData.append('revision_period_years', revisionPeriod.toString());
-    formData.append('status', 'Revisão');
+    formData.append('status', isRelatorio ? 'Aprovado' : 'Revisão');
     formData.append('creation_date', new Date().toISOString().split('T')[0]);
     formData.append('approverIds', JSON.stringify(approverIds));
     formData.append('targetSectors', JSON.stringify(targetSectors));
@@ -274,7 +281,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
         {/* Coluna da Direita: Seletores de Aprovadores e Setores */}
         <div className="form-approval-info">
           <div className="form-group">
-            <label>Selecionar Aprovadores (Obrigatório)</label>
+            <label>{isRelatorio ? 'Selecionar Leitores (Obrigatório)' : 'Selecionar Aprovadores (Obrigatório)'}</label>
             <div className="multi-select-box approvers-grid">
               {availableApprovers.map(app => (
                 <label key={app.id} className="checkbox-item">
@@ -286,7 +293,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
                   <span>{app.username} ({app.sector})</span>
                 </label>
               ))}
-              {availableApprovers.length === 0 && <p className="empty-info">Carregando gestores...</p>}
+              {availableApprovers.length === 0 && <p className="empty-info">{isRelatorio ? 'Carregando usuários...' : 'Carregando gestores...'}</p>}
             </div>
           </div>
 
@@ -313,7 +320,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
           Cancelar
         </button>
         <button type="submit" className="btn-submit" disabled={isUploading || (selectedFiles.length === 0 && !initialData)}>
-          {isUploading ? 'Processando...' : initialData ? 'Criar Nova Versão' : 'Enviar para Aprovação'}
+          {isUploading ? 'Processando...' : initialData ? 'Criar Nova Versão' : (isRelatorio ? 'Publicar Relatório' : 'Enviar para Aprovação')}
         </button>
       </div>
     </form>

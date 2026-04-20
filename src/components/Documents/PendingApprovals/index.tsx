@@ -77,7 +77,7 @@ const PendingApprovals: React.FC = () => {
                         {doc.title}
                       </h4>
                     </div>
-                    {isExclusion && <span className="pending-tag exclusion-tag">Solicitação de Exclusão</span>}
+                    {/* {isExclusion && <span className="pending-tag exclusion-tag">Solicitação de Exclusão</span>} */}
                   </div>
                   
                   <div className="pending-details-grid">
