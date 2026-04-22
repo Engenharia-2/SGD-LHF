@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, FileText, Calendar, Layers, CheckCircle } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { readingService } from '../../../services/readingService';
 import { useAlert } from '../../../contexts/AlertContext';
 import type { Document } from '../../../types';
 import DocumentModal from '../DocumentModal';
+import MyReadingCard from './MyReadingCard';
 import './styles.css';
 
 const MyPendingReadings: React.FC = () => {
@@ -54,42 +55,12 @@ const MyPendingReadings: React.FC = () => {
       
       <div className="my-pending-list">
         {pendingDocs.map(doc => (
-          <div key={doc.id} className="my-pending-item" onClick={() => handleView(doc)}>
-            <div className="my-pending-info">
-              <div className="my-pending-title-row">
-                <div className="my-pending-doc-main">
-                  <FileText size={18} className="icon-primary" />
-                  <h4>
-                    {doc.doc_code && <span className="my-pending-doc-code">[{doc.doc_code}] </span>}
-                    {doc.title}
-                  </h4>
-                </div>
-                <span className="my-pending-tag">Leitura Pendente</span>
-              </div>
-              
-              <div className="my-pending-details">
-                <div className="detail-item">
-                  <Layers size={14} />
-                  <span>Setor: <strong>{doc.sector}</strong> | Versão: <strong>{doc.version}</strong></span>
-                </div>
-                <div className="detail-item">
-                  <Calendar size={14} />
-                  <span>Publicado em: {new Date(doc.uploaded_at || doc.creation_date).toLocaleDateString()}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="my-pending-actions" onClick={e => e.stopPropagation()}>
-              <button 
-                className="btn-mark-read" 
-                onClick={() => handleMarkAsRead(doc.id)}
-                title="Marcar como Lido"
-              >
-                <CheckCircle size={18} />
-                <span>Marcar como Lido</span>
-              </button>
-            </div>
-          </div>
+          <MyReadingCard 
+            key={doc.id} 
+            doc={doc} 
+            onMarkAsRead={handleMarkAsRead} 
+            onView={handleView} 
+          />
         ))}
       </div>
 

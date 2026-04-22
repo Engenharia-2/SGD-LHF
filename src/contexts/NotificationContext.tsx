@@ -69,14 +69,14 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
           const exists = prev.some(n => n.id === newNotif.id);
           if (exists) return prev;
 
-          // Mostrar o alerta visual apenas para notificações novas (não duplicadas)
-          showAlert(newNotif.message, newNotif.type as any);
-
           return [
             { ...newNotif, is_read: false },
             ...prev
           ];
         });
+
+        // Mostrar o alerta visual fora do setState para evitar avisos do React
+        showAlert(newNotif.message, (newNotif.type as any) || 'info');
       };
 
       eventSource.onerror = (err) => {

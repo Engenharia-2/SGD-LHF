@@ -31,7 +31,7 @@ export interface Document {
   is_favorite?: boolean;
   is_published?: boolean;
   my_approval_status?: 'Pendente' | 'Aprovado' | 'Rejeitado';
-  user_reading_status?: 'Pendente' | 'Confirmado' | null;
+  user_reading_status?: 'Pendente' | 'Lido' | 'Confirmado' | null;
   parent_id?: number;
   history?: Partial<Document>[];
   files?: Array<{

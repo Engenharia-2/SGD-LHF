@@ -9,7 +9,6 @@ import './styles.css';
 
 interface DashboardProps {
   user: User;
-  pingResponse: string;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
@@ -58,10 +57,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       </div>
 
       {isAdminOrManager ? (
-        <div className="dashboard-pending-grid">
-          <PendingApprovals />
-          <PendingReadings />
-        </div>
+        <>
+          <MyPendingReadings />
+          <div className="dashboard-pending-grid">
+            <PendingApprovals />
+            <PendingReadings />
+          </div>
+        </>
       ) : (
         <div className="dashboard-user-grid">
           <MyPendingReadings />

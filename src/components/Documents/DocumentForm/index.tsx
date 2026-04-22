@@ -45,26 +45,36 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const [revisionPeriod, setRevisionPeriod] = useState<number>(initialData?.revision_period_years || 0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [approverIds, setApproverIds] = useState<number[]>([]);
+  const [readerIds, setReaderIds] = useState<number[]>([]);
   const [targetSectors, setTargetSectors] = useState<string[]>(initialData?.sector ? [initialData.sector] : [user.sector]);
   const [availableApprovers, setAvailableApprovers] = useState<User[]>([]);
+  const [availableReaders, setAvailableReaders] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   
   const isRelatorio = category === 'RELATORIOS';
+  const isAtas = category === 'ATAS';
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Buscar aprovadores (ou leitores se for relatório) usando o serviço
+    // Buscar usuários usando o serviço
     userService.listAll()
       .then(users => {
+        const otherUsers = users.filter((u: User) => u.id !== user.id);
+        
         if (isRelatorio) {
           // Para relatórios, todos os usuários ativos podem ser selecionados como leitores
-          setAvailableApprovers(users.filter((u: User) => u.id !== user.id));
+          setAvailableApprovers(otherUsers);
         } else {
-          // Fluxo normal: apenas Gestores e Admins
-          const approvers = users.filter((u: User) => 
-            (u.role === 'Gestor' || u.role === 'Administrador') && u.id !== user.id
+          // Fluxo normal: apenas Gestores e Admins para aprovadores
+          const approvers = otherUsers.filter((u: User) => 
+            u.role === 'Gestor' || u.role === 'Administrador'
           );
           setAvailableApprovers(approvers);
+          
+          // Se for Atas, carregar todos para leitores obrigatórios
+          if (isAtas) {
+            setAvailableReaders(otherUsers);
+          }
         }
       })
       .catch(err => console.error('Erro ao buscar usuários:', err));
@@ -79,7 +89,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
         }
       })
       .catch(err => console.error('Erro ao buscar códigos:', err));
-  }, [user.id, initialData]);
+  }, [user.id, initialData, isRelatorio, isAtas]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -103,6 +113,12 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const toggleApprover = (id: number) => {
     setApproverIds(prev => 
       prev.includes(id) ? prev.filter(aid => aid !== id) : [...prev, id]
+    );
+  };
+
+  const toggleReader = (id: number) => {
+    setReaderIds(prev => 
+      prev.includes(id) ? prev.filter(rid => rid !== id) : [...prev, id]
     );
   };
 
@@ -144,6 +160,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
     formData.append('status', isRelatorio ? 'Aprovado' : 'Revisão');
     formData.append('creation_date', new Date().toISOString().split('T')[0]);
     formData.append('approverIds', JSON.stringify(approverIds));
+    formData.append('readerIds', JSON.stringify(readerIds));
     formData.append('targetSectors', JSON.stringify(targetSectors));
     
     if (initialData) {
@@ -296,6 +313,25 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
               {availableApprovers.length === 0 && <p className="empty-info">{isRelatorio ? 'Carregando usuários...' : 'Carregando gestores...'}</p>}
             </div>
           </div>
+
+          {isAtas && (
+            <div className="form-group">
+              <label>Selecionar Leitores Obrigatórios (Opcional)</label>
+              <div className="multi-select-box readers-grid">
+                {availableReaders.map(reader => (
+                  <label key={reader.id} className="checkbox-item">
+                    <input 
+                      type="checkbox" 
+                      checked={readerIds.includes(reader.id)}
+                      onChange={() => toggleReader(reader.id)}
+                    />
+                    <span>{reader.username} ({reader.sector})</span>
+                  </label>
+                ))}
+                {availableReaders.length === 0 && <p className="empty-info">Carregando usuários...</p>}
+              </div>
+            </div>
+          )}
 
           <div className="form-group">
             <label>Disponibilizar para Setores</label>
