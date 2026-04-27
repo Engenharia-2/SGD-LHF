@@ -65,3 +65,27 @@ export interface Filters {
   version: string;
   status: string;
 }
+
+export interface Collaborator {
+  id: number;
+  username: string;
+  sector: string;
+}
+
+export interface ComplianceItem {
+  id: number;
+  title: string;
+  doc_code: string;
+  category: string;
+  status: 'Pendente' | 'Lido' | 'Confirmado';
+  read_at: string | null;
+  confirmed_at: string | null;
+}
+
+export interface NormCompliance {
+  user_id: number;
+  username: string;
+  sector: string;
+  status: 'Pendente' | 'Lido' | 'Confirmado' | null;
+  read_at: string | null;
+}

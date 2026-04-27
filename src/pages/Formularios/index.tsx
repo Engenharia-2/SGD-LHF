@@ -22,7 +22,7 @@ const Formularios: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="formularios-container">
+    <div className="formularios-container page-container">
       <div className="page-header">
         <h2>Formulários - {activeSector}</h2>
         {user.sector !== activeSector && (

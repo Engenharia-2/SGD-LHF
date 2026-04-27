@@ -43,25 +43,31 @@ const MyPendingReadings: React.FC = () => {
     }
   };
 
-  if (loading || pendingDocs.length === 0) return null;
+  if (loading) return null;
 
   return (
     <div className="my-pending-readings-container">
       <h3 className="my-pending-readings-title">
         <BookOpen size={20} />
         Minhas Leituras Obrigatórias
-        <span className="badge">{pendingDocs.length}</span>
+        {pendingDocs.length > 0 && <span className="badge">{pendingDocs.length}</span>}
       </h3>
       
       <div className="my-pending-list">
-        {pendingDocs.map(doc => (
-          <MyReadingCard 
-            key={doc.id} 
-            doc={doc} 
-            onMarkAsRead={handleMarkAsRead} 
-            onView={handleView} 
-          />
-        ))}
+        {pendingDocs.length > 0 ? (
+          pendingDocs.map(doc => (
+            <MyReadingCard 
+              key={doc.id} 
+              doc={doc} 
+              onMarkAsRead={handleMarkAsRead} 
+              onView={handleView} 
+            />
+          ))
+        ) : (
+          <div className="empty-pending-readings">
+            <p>Você não contém treinamentos pendentes.</p>
+          </div>
+        )}
       </div>
 
       {selectedDoc && (

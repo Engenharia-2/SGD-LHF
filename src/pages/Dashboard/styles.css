@@ -39,10 +39,17 @@
   align-items: start;
 }
 
-/* Em telas maiores que 1100px, as listas ficam lado a lado */
-@media (min-width: 1100px) {
+/* Em telas médias, as listas ficam em 2 colunas */
+@media (min-width: 1024px) {
   .dashboard-pending-grid, .dashboard-user-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Em telas muito largas (UltraWide), a dashboard de gestor pode ter 3 colunas */
+@media (min-width: 1600px) {
+  .dashboard-pending-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

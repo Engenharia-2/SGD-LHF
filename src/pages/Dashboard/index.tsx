@@ -57,13 +57,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       </div>
 
       {isAdminOrManager ? (
-        <>
+        <div className="dashboard-pending-grid">
           <MyPendingReadings />
-          <div className="dashboard-pending-grid">
-            <PendingApprovals />
-            <PendingReadings />
-          </div>
-        </>
+          <PendingApprovals />
+          <PendingReadings />
+        </div>
       ) : (
         <div className="dashboard-user-grid">
           <MyPendingReadings />

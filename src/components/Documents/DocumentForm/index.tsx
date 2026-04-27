@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import type { User, Document } from '../../../types';
 import { codeService } from '../../../services/codeService';
 import { userService } from '../../../services/userService';
+import { documentService } from '../../../services/documentService';
 import type { DocumentCode } from '../../../services/codeService';
 import { AVAILABLE_SECTORS } from '../../../utils/constants';
 import { X, FileText, Plus } from 'lucide-react';
@@ -56,28 +57,28 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Buscar usuários usando o serviço
-    userService.listAll()
+    // 1. Buscar Aprovadores Globais (Gestores/Admins de qualquer setor)
+    documentService.getAvailableApprovers()
       .then(users => {
-        const otherUsers = users.filter((u: User) => u.id !== user.id);
-        
-        if (isRelatorio) {
-          // Para relatórios, todos os usuários ativos podem ser selecionados como leitores
-          setAvailableApprovers(otherUsers);
-        } else {
-          // Fluxo normal: apenas Gestores e Admins para aprovadores
-          const approvers = otherUsers.filter((u: User) => 
-            u.role === 'Gestor' || u.role === 'Administrador'
-          );
-          setAvailableApprovers(approvers);
-          
-          // Se for Atas, carregar todos para leitores obrigatórios
-          if (isAtas) {
-            setAvailableReaders(otherUsers);
-          }
+        const others = users.filter((u: User) => u.id !== user.id);
+        if (!isRelatorio) {
+          setAvailableApprovers(others);
         }
       })
-      .catch(err => console.error('Erro ao buscar usuários:', err));
+      .catch(err => console.error('Erro ao buscar aprovadores:', err));
+
+    // 2. Buscar Lista Global de Usuários (Todos os setores)
+    documentService.listAllUsersGlobal()
+      .then(users => {
+        const others = users.filter((u: User) => u.id !== user.id);
+        if (isRelatorio) {
+          setAvailableApprovers(others);
+        }
+        if (isAtas) {
+          setAvailableReaders(others);
+        }
+      })
+      .catch(err => console.error('Erro ao buscar usuários globais:', err));
 
     // Buscar códigos de registro disponíveis
     codeService.list()

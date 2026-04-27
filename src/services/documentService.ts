@@ -63,4 +63,38 @@ export const documentService = {
       throw new Error(data.message || 'Erro ao atualizar status do documento.');
     }
   },
+
+  /**
+   * Lista documentos usando filtros genéricos (ex: categoria).
+   */
+  async listByFilters(filters: { category?: string, sector?: string }): Promise<Document[]> {
+    const params = new URLSearchParams();
+    if (filters.category) params.append('category', filters.category);
+    if (filters.sector) params.append('sector', filters.sector);
+
+    const response = await fetch(`${API_URL}/documents?${params.toString()}`, {
+      headers: getHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao buscar documentos filtrados');
+    return data.data;
+  },
+
+  async listAllUsersGlobal(): Promise<any[]> {
+    const response = await fetch(`${API_URL}/documents/users/global`, {
+      headers: getHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao buscar usuários globais.');
+    return data.data;
+  },
+
+  async getAvailableApprovers(): Promise<any[]> {
+    const response = await fetch(`${API_URL}/documents/approvers`, {
+      headers: getHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao buscar aprovadores disponíveis.');
+    return data.data;
+  },
 };

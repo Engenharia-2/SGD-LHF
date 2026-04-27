@@ -22,7 +22,7 @@ const Atas: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="atas-container">
+    <div className="atas-container page-container">
       <div className="page-header">
         <h2>Atas - {activeSector}</h2>
         {user.sector !== activeSector && (

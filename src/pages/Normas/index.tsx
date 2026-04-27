@@ -22,7 +22,7 @@ const Normas: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="normas-container">
+    <div className="normas-container page-container">
       <div className="page-header">
         <h2>Normas - {activeSector}</h2>
         {user.sector !== activeSector && (

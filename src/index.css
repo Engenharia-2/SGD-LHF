@@ -20,6 +20,8 @@
   --text-on-primary: #ffffff;
   --border-color: #e1e4e8;
   --accent-color: #076DF2;
+  --status-success: #27ae60;
+  --status-warning: #f39c12;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
@@ -84,4 +86,11 @@ button {
 .content-area {
   padding: 2rem;
   flex: 1;
+  width: 100%;
+}
+
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }

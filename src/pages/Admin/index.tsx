@@ -14,7 +14,7 @@ const Admin: React.FC<AdminProps> = ({ user }) => {
   const usersPromise = useMemo(() => userService.listAll(), []);
 
   return (
-    <div className="admin-container">
+    <div className="admin-container page-container">
       <h2>Painel Administrativo</h2>
       <Suspense fallback={<div className="loading-placeholder">Carregando lista de usuários...</div>}>
         <AdminList usersPromise={usersPromise} currentUser={user} />

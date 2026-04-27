@@ -1,23 +1,68 @@
+.treinamento-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.treinamento-container .page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
 .treinamento-container h2 {
-  color: var(--text-main);
-  margin: 0;
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.page-description {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.training-user-view {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+.view-section h3 {
+  font-size: 1.2rem;
   margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.view-mode-badge {
-  font-size: 0.75rem;
-  background-color: var(--color-laranja);
-  color: white;
-  padding: 0.3rem 0.6rem;
-  border-radius: 20px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: var(--shadow);
+.view-section h3::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 20px;
+  background-color: var(--primary-color);
+  border-radius: 2px;
 }
+
+/* Estilização dos Status de Leitura */
+.treinamento-container .doc-status.status-confirmado {
+  background-color: var(--status-success);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.treinamento-container .doc-status.status-lido {
+  background-color: var(--status-warning);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+

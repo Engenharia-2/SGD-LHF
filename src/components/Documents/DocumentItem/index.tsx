@@ -111,7 +111,6 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
           v{currentView.version} | Responsável: {currentView.responsible} | {new Date(currentView.creation_date || currentView.uploaded_at || '').toLocaleDateString()}
         </span>
         <span className="doc-sub-meta">
-          {currentView.original_name} | {((currentView.size || 0) / 1024).toFixed(2)} KB
           {selectedVersionId !== doc.id && <strong className="old-version-warning">* Visualizando versão antiga</strong>}
           {isExclusionPending && <strong className="exclusion-warning">* Aguardando Aprovação de Exclusão</strong>}
         </span>

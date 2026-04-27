@@ -45,7 +45,7 @@ const PendingReadings: React.FC = () => {
     }
   };
 
-  if (loading || pendingReadings.length === 0) return null;
+  if (loading) return <div className="pending-readings-loading">Carregando confirmações...</div>;
 
   return (
     <div className="pending-readings-container">
@@ -54,36 +54,42 @@ const PendingReadings: React.FC = () => {
         <span className="badge">{pendingReadings.length}</span>
       </h3>
       
-      <div className="pending-readings-list">
-        {pendingReadings.map(reading => (
-          <div key={reading.id} className="pending-reading-item">
-            <div className="reading-info">
-              <div className="reading-user">
-                <User size={16} />
-                <span><strong>{reading.username}</strong> leu o documento:</span>
+      {pendingReadings.length === 0 ? (
+        <div className="empty-pending-readings">
+          <p>Nenhuma confirmação de leitura pendente no momento.</p>
+        </div>
+      ) : (
+        <div className="pending-readings-list">
+          {pendingReadings.map(reading => (
+            <div key={reading.id} className="pending-reading-item">
+              <div className="reading-info">
+                <div className="reading-user">
+                  <User size={16} />
+                  <span><strong>{reading.username}</strong> leu o documento:</span>
+                </div>
+                <div className="reading-doc">
+                  <FileText size={16} />
+                  <span>{reading.doc_code ? `[${reading.doc_code}] ` : ''}{reading.document_title}</span>
+                </div>
+                <div className="reading-time">
+                  <Clock size={14} />
+                  <span>{new Date(reading.read_at).toLocaleString('pt-BR')}</span>
+                </div>
               </div>
-              <div className="reading-doc">
-                <FileText size={16} />
-                <span>{reading.doc_code ? `[${reading.doc_code}] ` : ''}{reading.document_title}</span>
-              </div>
-              <div className="reading-time">
-                <Clock size={14} />
-                <span>{new Date(reading.read_at).toLocaleString('pt-BR')}</span>
+              
+              <div className="reading-actions">
+                <button 
+                  className="btn-icon btn-approve-icon" 
+                  onClick={() => handleConfirm(reading.id)}
+                  title="Confirmar Leitura"
+                >
+                  <Check size={20} />
+                </button>
               </div>
             </div>
-            
-            <div className="reading-actions">
-              <button 
-                className="btn-icon btn-approve-icon" 
-                onClick={() => handleConfirm(reading.id)}
-                title="Confirmar Leitura"
-              >
-                <Check size={20} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

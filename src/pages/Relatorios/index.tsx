@@ -22,7 +22,7 @@ const Relatorios: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="relatorios-container">
+    <div className="relatorios-container page-container">
       <div className="page-header">
         <h2>Relatórios - {activeSector}</h2>
         {user.sector !== activeSector && (
