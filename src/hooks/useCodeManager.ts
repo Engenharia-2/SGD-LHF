@@ -28,9 +28,9 @@ export const useCodeManager = () => {
     fetchCodes();
   }, [fetchCodes]);
 
-  const createCode = async (prefix: string, description: string) => {
+  const createCode = async (prefix: string, description: string, pages: string[]) => {
     try {
-      await codeService.create(prefix, description);
+      await codeService.create(prefix, description, pages);
       showAlert('Código criado com sucesso!', 'success');
       await fetchCodes();
       return true;
@@ -40,9 +40,9 @@ export const useCodeManager = () => {
     }
   };
 
-  const updateCode = async (id: number, prefix: string, description: string) => {
+  const updateCode = async (id: number, prefix: string, description: string, pages: string[]) => {
     try {
-      await codeService.update(id, prefix, description);
+      await codeService.update(id, prefix, description, pages);
       showAlert('Código atualizado com sucesso!', 'success');
       await fetchCodes();
       return true;

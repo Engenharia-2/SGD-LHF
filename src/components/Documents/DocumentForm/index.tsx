@@ -1,11 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import type { User, Document } from '../../../types';
-import { codeService } from '../../../services/codeService';
-import { userService } from '../../../services/userService';
-import { documentService } from '../../../services/documentService';
-import type { DocumentCode } from '../../../services/codeService';
-import { AVAILABLE_SECTORS } from '../../../utils/constants';
-import { X, FileText, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import type { Document } from '../../../types';
+import { useDocumentFormSetup } from '../../../hooks/useDocumentFormSetup';
+import MetadataSection from './MetadataSection';
+import FileUploadSection from './FileUploadSection';
+import ApprovalSection from './ApprovalSection';
 import './styles.css';
 
 interface DocumentFormProps {
@@ -29,6 +27,9 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   onCancel,
   isUploading
 }) => {
+  const isRelatorio = category === 'RELATORIOS';
+  const isAtas = category === 'ATAS';
+
   const getNextVersion = (v: string) => {
     if (!v) return '1.0';
     const parts = v.split('.');
@@ -39,7 +40,6 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   };
 
   const [docCode, setDocCode] = useState(initialData?.doc_code || '');
-  const [availableCodes, setAvailableCodes] = useState<DocumentCode[]>([]);
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [version, setVersion] = useState(initialData ? getNextVersion(initialData.version) : '1.0');
@@ -48,104 +48,41 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const [approverIds, setApproverIds] = useState<number[]>([]);
   const [readerIds, setReaderIds] = useState<number[]>([]);
   const [targetSectors, setTargetSectors] = useState<string[]>(initialData?.sector ? [initialData.sector] : [user.sector]);
-  const [availableApprovers, setAvailableApprovers] = useState<User[]>([]);
-  const [availableReaders, setAvailableReaders] = useState<User[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  
-  const isRelatorio = category === 'RELATORIOS';
-  const isAtas = category === 'ATAS';
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // 1. Buscar Aprovadores Globais (Gestores/Admins de qualquer setor)
-    documentService.getAvailableApprovers()
-      .then(users => {
-        const others = users.filter((u: User) => u.id !== user.id);
-        if (!isRelatorio) {
-          setAvailableApprovers(others);
-        }
-      })
-      .catch(err => console.error('Erro ao buscar aprovadores:', err));
-
-    // 2. Buscar Lista Global de Usuários (Todos os setores)
-    documentService.listAllUsersGlobal()
-      .then(users => {
-        const others = users.filter((u: User) => u.id !== user.id);
-        if (isRelatorio) {
-          setAvailableApprovers(others);
-        }
-        if (isAtas) {
-          setAvailableReaders(others);
-        }
-      })
-      .catch(err => console.error('Erro ao buscar usuários globais:', err));
-
-    // Buscar códigos de registro disponíveis
-    codeService.list()
-      .then(codes => {
-        setAvailableCodes(codes);
-        // Se não for edição e houver códigos, pré-seleciona o primeiro se estiver vazio
-        if (!initialData && codes.length > 0 && !docCode) {
-          setDocCode(codes[0].prefix);
-        }
-      })
-      .catch(err => console.error('Erro ao buscar códigos:', err));
-  }, [user.id, initialData, isRelatorio, isAtas]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const newFiles = Array.from(files);
-      setSelectedFiles(prev => [...prev, ...newFiles]);
-      
-      if (!title && newFiles.length > 0) {
-        setTitle(newFiles[0].name.split('.')[0]);
-      }
-      
-      // Reset input to allow selecting same file again if needed
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const toggleApprover = (id: number) => {
-    setApproverIds(prev => 
-      prev.includes(id) ? prev.filter(aid => aid !== id) : [...prev, id]
-    );
-  };
-
-  const toggleReader = (id: number) => {
-    setReaderIds(prev => 
-      prev.includes(id) ? prev.filter(rid => rid !== id) : [...prev, id]
-    );
-  };
-
-  const toggleSector = (s: string) => {
-    setTargetSectors(prev => 
-      prev.includes(s) ? (prev.length > 1 ? prev.filter(sec => sec !== s) : prev) : [...prev, s]
-    );
-  };
+  // Hook isola toda a chamada de rede e gerenciamento de carregamento de dependências
+  const { 
+    availableCodes, 
+    availableApprovers, 
+    availableReaders, 
+    isLoading, 
+    error: hookError 
+  } = useDocumentFormSetup({
+    userId: user.id,
+    category,
+    isRelatorio,
+    isAtas,
+    initialData,
+    currentDocCode: docCode,
+    setDocCode
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedFiles.length === 0 && !initialData) {
-      setError('Por favor, selecione pelo menos um arquivo.');
+      setFormError('Por favor, selecione pelo menos um arquivo.');
       return;
     }
     if (approverIds.length === 0) {
-      setError(isRelatorio ? 'Selecione pelo menos um leitor.' : 'Selecione pelo menos um aprovador.');
+      setFormError(isRelatorio ? 'Selecione pelo menos um leitor.' : 'Selecione pelo menos um aprovador.');
       return;
     }
     if (!docCode) {
-      setError('Por favor, selecione um código de registro.');
+      setFormError('Por favor, selecione um código de registro.');
       return;
     }
 
     const formData = new FormData();
-    // Suporte a múltiplos arquivos usando a chave 'files'
     selectedFiles.forEach(file => {
       formData.append('files', file);
     });
@@ -173,190 +110,58 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="document-form-container">
-      {error && <p className="upload-error">{error}</p>}
+      {(formError || hookError) && <p className="upload-error">{formError || hookError}</p>}
 
       <div className="form-sections-container">
         {/* Coluna da Esquerda: Informações de Texto e Arquivos */}
         <div className="form-main-info">
-          <div className="form-row">
-            <div className="form-group code-group">
-              <label>Código do Registro</label>
-              <select 
-                value={docCode}
-                onChange={(e) => setDocCode(e.target.value)}
-                disabled={!!initialData}
-                required
-              >
-                {!initialData && <option value="">Selecione um código...</option>}
-                {availableCodes.map(code => (
-                  <option key={code.id} value={code.prefix}>
-                    {code.prefix} - {code.description}
-                  </option>
-                ))}
-                {initialData && !availableCodes.some(c => c.prefix === docCode) && (
-                  <option value={docCode}>{docCode}</option>
-                )}
-              </select>
-              <small className="help-text">O sistema gerará automaticamente o próximo número sequencial para o prefixo escolhido.</small>
-            </div>
+          <MetadataSection
+            initialData={initialData}
+            docCode={docCode}
+            setDocCode={setDocCode}
+            availableCodes={availableCodes}
+            title={title}
+            setTitle={setTitle}
+            description={description}
+            setDescription={setDescription}
+            version={version}
+            setVersion={setVersion}
+            revisionPeriod={revisionPeriod}
+            setRevisionPeriod={setRevisionPeriod}
+          />
 
-            <div className="form-group title-group">
-              <label>Título do Registro</label>
-              <input 
-                type="text" 
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ex: Instrução de Trabalho"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label>Descrição Detalhada</label>
-            <textarea 
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descreva o propósito e conteúdo deste documento..."
-              rows={3}
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label>Versão</label>
-              <input 
-                type="text" 
-                value={version}
-                onChange={(e) => setVersion(e.target.value)}
-                placeholder="1.0"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Periodicidade de Revisão</label>
-              <select 
-                value={revisionPeriod}
-                onChange={(e) => setRevisionPeriod(Number(e.target.value))}
-              >
-                <option value={0}>Sem revisão agendada</option>
-                <option value={1}>1 Ano</option>
-                <option value={2}>2 Anos</option>
-                <option value={3}>3 Anos</option>
-                <option value={4}>4 Anos</option>
-                <option value={5}>5 Anos</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="form-group file-upload-group">
-            <label>Documentos (Arquivos)</label>
-            <div className="file-input-wrapper">
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                accept=".pdf,.docx,.doc,.xlsx,.xls"
-                multiple
-                onChange={handleFileChange}
-              />
-              <button 
-                type="button"
-                className="btn-add-files"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Plus size={18} />
-                Selecionar Arquivos
-              </button>
-            </div>
-
-            {selectedFiles.length > 0 && (
-              <div className="selected-files-list">
-                {selectedFiles.map((file, index) => (
-                  <div key={`${file.name}-${index}`} className="file-item-badge">
-                    <FileText size={14} />
-                    <span title={file.name}>{file.name}</span>
-                    <button 
-                      type="button" 
-                      className="btn-remove-file"
-                      onClick={() => removeFile(index)}
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {initialData && selectedFiles.length === 0 && (
-              <div className="keep-current-file">
-                <span className="selected-filename">Mantendo arquivos da versão anterior</span>
-              </div>
-            )}
-          </div>
+          <FileUploadSection
+            initialData={initialData}
+            selectedFiles={selectedFiles}
+            setSelectedFiles={setSelectedFiles}
+            title={title}
+            setTitle={setTitle}
+          />
         </div>
 
         {/* Coluna da Direita: Seletores de Aprovadores e Setores */}
         <div className="form-approval-info">
-          <div className="form-group">
-            <label>{isRelatorio ? 'Selecionar Leitores (Obrigatório)' : 'Selecionar Aprovadores (Obrigatório)'}</label>
-            <div className="multi-select-box approvers-grid">
-              {availableApprovers.map(app => (
-                <label key={app.id} className="checkbox-item">
-                  <input 
-                    type="checkbox" 
-                    checked={approverIds.includes(app.id)}
-                    onChange={() => toggleApprover(app.id)}
-                  />
-                  <span>{app.username} ({app.sector})</span>
-                </label>
-              ))}
-              {availableApprovers.length === 0 && <p className="empty-info">{isRelatorio ? 'Carregando usuários...' : 'Carregando gestores...'}</p>}
-            </div>
-          </div>
-
-          {isAtas && (
-            <div className="form-group">
-              <label>Selecionar Leitores Obrigatórios (Opcional)</label>
-              <div className="multi-select-box readers-grid">
-                {availableReaders.map(reader => (
-                  <label key={reader.id} className="checkbox-item">
-                    <input 
-                      type="checkbox" 
-                      checked={readerIds.includes(reader.id)}
-                      onChange={() => toggleReader(reader.id)}
-                    />
-                    <span>{reader.username} ({reader.sector})</span>
-                  </label>
-                ))}
-                {availableReaders.length === 0 && <p className="empty-info">Carregando usuários...</p>}
-              </div>
-            </div>
-          )}
-
-          <div className="form-group">
-            <label>Disponibilizar para Setores</label>
-            <div className="multi-select-box sectors-grid">
-              {AVAILABLE_SECTORS.map(s => (
-                <label key={s} className="checkbox-item">
-                  <input 
-                    type="checkbox" 
-                    checked={targetSectors.includes(s)}
-                    onChange={() => toggleSector(s)}
-                  />
-                  <span>{s}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          <ApprovalSection
+            isRelatorio={isRelatorio}
+            isAtas={isAtas}
+            availableApprovers={availableApprovers}
+            approverIds={approverIds}
+            setApproverIds={setApproverIds}
+            availableReaders={availableReaders}
+            readerIds={readerIds}
+            setReaderIds={setReaderIds}
+            targetSectors={targetSectors}
+            setTargetSectors={setTargetSectors}
+            isLoading={isLoading}
+          />
         </div>
       </div>
 
       <div className="form-footer">
-        <button type="button" className="btn-cancel" onClick={onCancel} disabled={isUploading}>
+        <button type="button" className="btn-cancel" onClick={onCancel} disabled={isUploading || isLoading}>
           Cancelar
         </button>
-        <button type="submit" className="btn-submit" disabled={isUploading || (selectedFiles.length === 0 && !initialData)}>
+        <button type="submit" className="btn-submit" disabled={isUploading || isLoading || (selectedFiles.length === 0 && !initialData)}>
           {isUploading ? 'Processando...' : initialData ? 'Criar Nova Versão' : (isRelatorio ? 'Publicar Relatório' : 'Enviar para Aprovação')}
         </button>
       </div>

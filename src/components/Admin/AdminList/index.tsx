@@ -68,6 +68,7 @@ const AdminList: React.FC<AdminListProps> = ({ usersPromise, currentUser }) => {
   };
 
   const canReset = currentUser.role === 'Administrador' || currentUser.role === 'Gestor';
+  const canDelete = currentUser.role === 'Gestor';
 
   return (
     <div className="admin-list-wrapper">
@@ -111,12 +112,14 @@ const AdminList: React.FC<AdminListProps> = ({ usersPromise, currentUser }) => {
                     Redefinir
                   </button>
                 )}
-                <button 
-                  className="btn-action reject" 
-                  onClick={() => setUserToDelete(u.id)}
-                >
-                  {u.is_authorized ? 'Remover' : 'Recusar'}
-                </button>
+                {canDelete && (
+                  <button 
+                    className="btn-action reject" 
+                    onClick={() => setUserToDelete(u.id)}
+                  >
+                    {u.is_authorized ? 'Remover' : 'Recusar'}
+                  </button>
+                )}
               </td>
             </tr>
           ))}

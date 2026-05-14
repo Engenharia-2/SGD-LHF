@@ -1,6 +1,6 @@
 import React, { useState, useMemo, memo } from 'react';
 import { Pencil, Trash2, Star } from 'lucide-react';
-import type { Document } from '../../../types';
+import type { Document, DocumentStatus } from '../../../types';
 import { documentService } from '../../../services/documentService';
 import { useAlert } from '../../../contexts/AlertContext';
 import './styles.css';

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '../types';
-
+import { ROLES } from '../utils/constants';
 interface AuthContextType {
   user: User | null;
   activeSector: string;
@@ -20,13 +20,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('sgd_user');
-    if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      setActiveSector(parsedUser.sector);
+    try {
+      const savedUser = localStorage.getItem('sgd_user');
+      if (savedUser) {
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+        setActiveSector(parsedUser.sector);
+      }
+    } catch (error) {
+      console.error('Falha ao restaurar usuário do cache. Limpando credenciais corrompidas.', error);
+      localStorage.removeItem('sgd_user');
+      localStorage.removeItem('sgd_token');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = (userData: User, token: string) => {
@@ -41,18 +48,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     localStorage.removeItem('sgd_user');
     localStorage.removeItem('sgd_token');
-    window.location.reload(); // Forçar reload para limpar estados de outros contexts
+    // window.location.reload() removido: A árvore do React desmontará os componentes protegidos nativamente.
   };
 
   const changeSector = (sector: string) => {
     // Apenas Gestores podem mudar o setor ativo
-    if (user?.role === 'Gestor') {
+    if (user?.role === ROLES.GESTOR) {
       setActiveSector(sector);
     }
   };
 
-  const canChangeSector = user?.role === 'Gestor';
-  const canModify = user?.role === 'Gestor' || user?.role === 'Administrador';
+  const canChangeSector = user?.role === ROLES.GESTOR;
+  const canModify = user?.role === ROLES.GESTOR || user?.role === ROLES.ADMIN;
 
   return (
     <AuthContext.Provider value={{ 

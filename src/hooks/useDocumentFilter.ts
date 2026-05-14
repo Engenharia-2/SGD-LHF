@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
-import type { Document } from '../types';
-import type { Filters } from '../components/Documents/DocumentFilter';
+import type { Document, Filters } from '../types';
 
 export const useDocumentFilter = (documents: Document[]) => {
   const [activeFilters, setActiveFilters] = useState<Filters>({

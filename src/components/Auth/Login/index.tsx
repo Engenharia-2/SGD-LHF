@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './styles.css';
 import { useAlert } from '../../../contexts/AlertContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { AVAILABLE_SECTORS, USER_ROLES } from '../../../utils/constants';
+import { USER_ROLES, REGISTRABLE_SECTORS } from '../../../utils/constants';
 import { authService } from '../../../services/authService';
 import type { User } from '../../../types';
 
@@ -14,7 +14,7 @@ const Login: React.FC<LoginProps> = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [sector, setSector] = useState<string>(AVAILABLE_SECTORS[0]);
+  const [sector, setSector] = useState<string>(REGISTRABLE_SECTORS[0]);
   const [role, setRole] = useState<string>(USER_ROLES[2]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -93,7 +93,7 @@ const Login: React.FC<LoginProps> = () => {
               <button 
                 type="button" 
                 className="forgot-password-btn"
-                onClick={() => showAlert('Para redefinir sua senha, por favor entre em contato com o administrador do sistema ou o gestor do seu setor.', 'info', 10000)}
+                onClick={() => showAlert('Para redefinir sua senha, por favor entre em contato com o administrador do sistema ou o gestor do seu setor.', 'info')}
               >
                 Esqueceu a senha?
               </button>
@@ -109,7 +109,7 @@ const Login: React.FC<LoginProps> = () => {
                   value={sector} 
                   onChange={(e) => setSector(e.target.value)}
                 >
-                  {AVAILABLE_SECTORS.map(s => (
+                  {REGISTRABLE_SECTORS.map(s => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>

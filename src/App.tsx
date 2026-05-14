@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './components/Auth/Login'
 import Sidebar from './components/Layout/Sidebar'
@@ -11,19 +11,11 @@ import Atas from './pages/Atas'
 import Formularios from './pages/Formularios'
 import Admin from './pages/Admin'
 import { useAuth } from './contexts/AuthContext'
+import { ROLES } from './utils/constants'
 import './App.css'
 
 function App() {
   const { user, logout, isLoading } = useAuth();
-  const [pingResponse, setPingResponse] = useState<string>('Esperando...')
-
-  useEffect(() => {
-    if (window.electronAPI && window.electronAPI.ping) {
-      window.electronAPI.ping().then((response) => {
-        setPingResponse(response)
-      }).catch(() => setPingResponse('Erro'))
-    }
-  }, [])
 
   if (isLoading) {
     return <div className="loading-screen">Carregando Sistema...</div>;
@@ -33,7 +25,7 @@ function App() {
     return <Login />;
   }
 
-  const isAdminOrManager = user.role === 'Administrador' || user.role === 'Gestor';
+  const isAdminOrManager = user.role === ROLES.ADMIN || user.role === ROLES.GESTOR;
 
   return (
     <HashRouter>
@@ -45,7 +37,7 @@ function App() {
 
           <main className="content-area">
             <Routes>
-              <Route path="/" element={<Dashboard user={user} pingResponse={pingResponse} />} />
+              <Route path="/" element={<Dashboard user={user} />} />
               <Route path="/relatorios" element={<Relatorios />} />
               <Route path="/treinamento" element={<Treinamento />} />
               <Route path="/normas" element={<Normas />} />

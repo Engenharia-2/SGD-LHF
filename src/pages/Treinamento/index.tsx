@@ -10,12 +10,10 @@ import './styles.css';
 const Treinamento: React.FC = () => {
   const { user } = useAuth();
   const [completedTrainings, setCompletedTrainings] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user?.role === 'Funcionario') {
       const fetchHistory = async () => {
-        setLoading(true);
         try {
           // Busca o histórico do próprio usuário logado através do novo endpoint seguro
           const data = await readingService.getMyCompliance();
@@ -30,8 +28,6 @@ const Treinamento: React.FC = () => {
           setCompletedTrainings(completed);
         } catch (err) {
           console.error('Erro ao buscar histórico de treinamentos:', err);
-        } finally {
-          setLoading(false);
         }
       };
       fetchHistory();
@@ -70,7 +66,6 @@ const Treinamento: React.FC = () => {
               title="Treinamentos Finalizados"
               emptyMessage="Você ainda não concluiu nenhum treinamento obrigatório."
               compact={true}
-              hideActions={true} // Não precisa de excluir/editar aqui
             />
           </div>
         </div>

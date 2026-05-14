@@ -22,7 +22,7 @@ function createWindow() {
 
   const win = new BrowserWindow({
     width: 1200,
-    height: 800,
+    height: 1000,
     icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -33,8 +33,10 @@ function createWindow() {
     title: 'SGD-LHF - Gerenciamento de Documentos',
   })
 
-  // Habilitar DevTools mesmo em produção para depuração (Remover antes da entrega final)
-  win.webContents.openDevTools();
+  // Abre o DevTools automaticamente APENAS em ambiente de desenvolvimento
+  if (process.env.VITE_DEV_SERVER_URL) {
+    win.webContents.openDevTools();
+  }
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL)
