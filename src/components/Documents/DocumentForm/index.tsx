@@ -48,6 +48,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
   const [approverIds, setApproverIds] = useState<number[]>([]);
   const [readerIds, setReaderIds] = useState<number[]>([]);
   const [targetSectors, setTargetSectors] = useState<string[]>(initialData?.sector ? [initialData.sector] : [user.sector]);
+  const [editJustification, setEditJustification] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
 
   // Hook isola toda a chamada de rede e gerenciamento de carregamento de dependências
@@ -82,6 +83,11 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
       return;
     }
 
+    if (initialData && !editJustification) {
+      setFormError('Por favor, informe a justificativa para esta revisão.');
+      return;
+    }
+
     const formData = new FormData();
     selectedFiles.forEach(file => {
       formData.append('files', file);
@@ -103,6 +109,8 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
     
     if (initialData) {
       formData.append('parent_id', (initialData.parent_id || initialData.id).toString());
+      formData.append('previous_version_id', initialData.id.toString());
+      formData.append('edit_justification', editJustification);
     }
 
     onSubmit(formData);
@@ -128,6 +136,8 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             setVersion={setVersion}
             revisionPeriod={revisionPeriod}
             setRevisionPeriod={setRevisionPeriod}
+            editJustification={editJustification}
+            setEditJustification={setEditJustification}
           />
 
           <FileUploadSection

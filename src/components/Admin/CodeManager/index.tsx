@@ -54,8 +54,20 @@ const CodeManager: React.FC = () => {
     setEditingCode(code);
     setPrefix(code.prefix);
     setDescription(code.description);
-    // Garantir que code.pages seja tratado como array (vindo do JSON do banco)
-    const pages = Array.isArray(code.pages) ? code.pages : JSON.parse(code.pages as string);
+    
+    // Tratamento seguro para conversão de JSON
+    let pages: string[] = [];
+    try {
+      if (Array.isArray(code.pages)) {
+        pages = code.pages;
+      } else if (code.pages) {
+        pages = typeof code.pages === 'string' ? JSON.parse(code.pages) : code.pages;
+      }
+    } catch (e) {
+      console.error('Erro ao processar páginas (edit):', e);
+      pages = [];
+    }
+
     setSelectedPages(pages);
     setShowModal(true);
   };
@@ -116,7 +128,19 @@ const CodeManager: React.FC = () => {
               </tr>
             ) : (
               codes.map(code => {
-                const pages = Array.isArray(code.pages) ? code.pages : JSON.parse(code.pages as string);
+                // Tratamento seguro para renderização
+                let pages: string[] = [];
+                try {
+                  if (Array.isArray(code.pages)) {
+                    pages = code.pages;
+                  } else if (code.pages) {
+                    pages = typeof code.pages === 'string' ? JSON.parse(code.pages) : code.pages;
+                  }
+                } catch (e) {
+                  console.error('Erro ao processar páginas (render):', e);
+                  pages = [];
+                }
+
                 return (
                   <tr key={code.id}>
                     <td className="code-prefix"><strong>{code.prefix}</strong></td>

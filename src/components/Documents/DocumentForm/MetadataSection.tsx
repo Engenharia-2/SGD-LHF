@@ -15,6 +15,8 @@ interface MetadataSectionProps {
   setVersion: (version: string) => void;
   revisionPeriod: number;
   setRevisionPeriod: (period: number) => void;
+  editJustification?: string;
+  setEditJustification?: (val: string) => void;
 }
 
 const MetadataSection: React.FC<MetadataSectionProps> = ({
@@ -29,10 +31,27 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({
   version,
   setVersion,
   revisionPeriod,
-  setRevisionPeriod
+  setRevisionPeriod,
+  editJustification,
+  setEditJustification
 }) => {
   return (
     <>
+      {initialData && setEditJustification && (
+        <div className="form-group edit-justification-group">
+          <label className="required-label">Justificativa da Revisão</label>
+          <textarea 
+            value={editJustification}
+            onChange={(e) => setEditJustification(e.target.value)}
+            placeholder="Descreva obrigatoriamente o motivo desta alteração..."
+            rows={2}
+            className="highlight-input"
+            required
+          />
+          <small className="help-text-warning">Este motivo será exibido no histórico de versões e enviado ao responsável.</small>
+        </div>
+      )}
+
       <div className="form-row">
         <div className="form-group code-group">
           <label>Código do Registro</label>

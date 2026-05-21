@@ -33,6 +33,7 @@ export interface Document {
   my_approval_status?: 'Pendente' | 'Aprovado' | 'Rejeitado';
   user_reading_status?: 'Pendente' | 'Lido' | 'Confirmado' | null;
   parent_id?: number;
+  edit_justification?: string;
   history?: Partial<Document>[];
   files?: Array<{
     id: number;

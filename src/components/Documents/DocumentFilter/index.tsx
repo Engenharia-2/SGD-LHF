@@ -103,7 +103,7 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({ onFilter }) => {
             />
           </div>
 
-          <div className="filter-group">
+          {/* <div className="filter-group">
             <label>Status</label>
             <select 
               value={filters.status}
@@ -113,7 +113,7 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({ onFilter }) => {
               <option value="Aprovado">Aprovado</option>
               <option value="Obsoleto">Obsoleto</option>
             </select>
-          </div>
+          </div> */}
         </div>
 
         <div className="filter-actions">

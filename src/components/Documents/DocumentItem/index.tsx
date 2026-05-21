@@ -50,7 +50,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   const isExclusionPending = currentStatus === 'Exclusão';
 
   return (
-    <li className={`document-item ${isExclusionPending ? 'exclusion-pending' : ''}`} onClick={() => onView(doc)}>
+    <li className={`document-item ${isExclusionPending ? 'exclusion-pending' : ''}`} onClick={() => onView(currentView as Document)}>
       <div className="doc-favorite" onClick={e => e.stopPropagation()}>
         <button 
           className={`btn-icon btn-favorite ${doc.is_favorite ? 'active' : ''}`}

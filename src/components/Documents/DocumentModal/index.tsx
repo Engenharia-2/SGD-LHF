@@ -44,6 +44,16 @@ const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose }) => {
         </header>
 
         <main className="document-modal-body">
+          {document.status === 'Obsoleto' && document.edit_justification && (
+            <div className="revision-justification-banner">
+              <div className="banner-title">
+                <Clock size={18} />
+                <strong>Motivo desta revisão:</strong>
+              </div>
+              <p>{document.edit_justification}</p>
+            </div>
+          )}
+
           <DocumentInfo document={document} />
           
           <DocumentFiles document={document} />
