@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Check, User, FileText, Clock } from 'lucide-react';
+import { Check, User, FileText, Clock, CheckSquare } from 'lucide-react';
 import { readingService } from '../../../services/readingService';
 import { useAlert } from '../../../contexts/AlertContext';
 import './styles.css';
@@ -50,6 +50,7 @@ const PendingReadings: React.FC = () => {
   return (
     <div className="pending-readings-container">
       <h3 className="pending-readings-title">
+        <CheckSquare size={24} color="var(--primary-color)" />
         Confirmações de Leitura Pendentes
         <span className="badge">{pendingReadings.length}</span>
       </h3>

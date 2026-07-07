@@ -17,6 +17,7 @@ interface DocumentListProps {
     role: string;
   };
   title?: string;
+  icon?: React.ReactNode;
   emptyMessage?: string;
   onDelete?: (id: number) => void;
   onUpdate?: (id: number, formData: FormData) => Promise<boolean>;
@@ -28,6 +29,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
   documents,
   user,
   title = "Lista de Documentos", 
+  icon,
   emptyMessage = "Nenhum documento encontrado.",
   onDelete,
   onUpdate,
@@ -92,7 +94,10 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
   return (
     <div className="document-list-container">
-      <h3>{title}</h3>
+      <h3 className="document-list-title">
+        {icon}
+        {title}
+      </h3>
       {documents.length === 0 ? (
         <div className="placeholder-content">
           <p>{emptyMessage}</p>

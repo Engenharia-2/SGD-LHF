@@ -12,6 +12,12 @@
   color: var(--text-main);
 }
 
+.document-list-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .document-list {
   list-style: none;
   padding: 0;

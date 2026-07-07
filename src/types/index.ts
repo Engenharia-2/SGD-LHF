@@ -6,6 +6,7 @@ export interface User {
   sector: Sector;
   role: UserRole;
   is_authorized?: boolean;
+  email?: string;
 }
 
 export type DocumentStatus = 'Revisão' | 'Aprovado' | 'Obsoleto' | 'Rejeitado' | 'Exclusão';
@@ -43,6 +44,15 @@ export interface Document {
     size: number;
   }>;
   v?: number;
+}
+
+export interface DocumentDraftTracking extends Document {
+  approvers: Array<{
+    id: number;
+    username: string;
+    sector: string;
+    status: string;
+  }>;
 }
 
 export type NotificationType = 'info' | 'success' | 'error' | 'warning';

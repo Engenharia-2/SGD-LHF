@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
 import DocumentList from '../../components/Documents/DocumentList';
 import PendingApprovals from '../../components/Documents/PendingApprovals';
 import PendingReadings from '../../components/Documents/PendingReadings';
 import MyPendingReadings from '../../components/Documents/MyPendingReadings';
 import { favoriteService } from '../../services/favoriteService';
+import MyDraftsTracking from '../../components/Dashboard/MyDraftsTracking';
 import type { Document, User } from '../../types';
 import './styles.css';
 
@@ -69,6 +71,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             documents={favorites}
             user={user}
             title="Documentos Favoritados"
+            icon={<Star size={24} color="var(--primary-color)" fill="var(--bg-card)" />}
             emptyMessage="Você ainda não possui documentos favoritados."
             onToggleFavorite={handleToggleFavorite}
             compact={true}
@@ -81,10 +84,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           documents={favorites}
           user={user}
           title="Documentos Favoritados"
+          icon={<Star size={24} color="var(--primary-color)" fill="var(--bg-card)" />}
           emptyMessage="Você ainda não possui documentos favoritados. Estrele documentos nos módulos de Processos ou Gestão para visualizá-los aqui."
           onToggleFavorite={handleToggleFavorite}
         />
       )}
+
+      <MyDraftsTracking />
     </div>
   );
 };

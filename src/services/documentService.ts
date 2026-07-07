@@ -97,4 +97,22 @@ export const documentService = {
     if (!response.ok) throw new Error(data.message || 'Erro ao buscar aprovadores disponíveis.');
     return data.data;
   },
+  async getMyDraftsTracking(): Promise<any[]> {
+    const response = await fetch(`${API_URL}/documents/my-drafts`, {
+      headers: getHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao buscar rascunhos pendentes.');
+    return data.data;
+  },
+
+  async remindApprovers(id: number): Promise<number> {
+    const response = await fetch(`${API_URL}/documents/${id}/remind-approvers`, {
+      method: 'POST',
+      headers: getHeaders(),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao enviar lembretes.');
+    return data.data.notifiedCount;
+  }
 };

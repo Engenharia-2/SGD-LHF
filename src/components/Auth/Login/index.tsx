@@ -13,6 +13,7 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [sector, setSector] = useState<string>(REGISTRABLE_SECTORS[0]);
   const [role, setRole] = useState<string>(USER_ROLES[2]);
@@ -30,7 +31,7 @@ const Login: React.FC<LoginProps> = () => {
     setLoading(true);
 
     const payload = isRegistering 
-      ? { username, password, sector, role } 
+      ? { username, email, password, sector, role } 
       : { username, password };
 
     try {
@@ -102,6 +103,18 @@ const Login: React.FC<LoginProps> = () => {
 
           {isRegistering && (
             <>
+              <div className="form-group">
+                <label htmlFor="email">E-mail</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="Digite seu e-mail corporativo"
+                />
+              </div>
+
               <div className="form-group">
                 <label htmlFor="sector">Setor</label>
                 <select 

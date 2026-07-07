@@ -21,7 +21,7 @@ function createWindow() {
     : path.join(__dirname, '../dist/logo-SGD.png');
 
   const win = new BrowserWindow({
-    width: 1200,
+    width: 1300,
     height: 1000,
     icon: iconPath,
     webPreferences: {
