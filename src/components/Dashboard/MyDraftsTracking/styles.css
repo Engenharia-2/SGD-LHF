@@ -222,7 +222,7 @@
 }
 
 .remind-btn:hover:not(:disabled) {
-  background-color: var(--primary-dark);
+  background-color: var(--color-azul-claro);
 }
 
 .remind-btn:disabled {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './styles.css';
-import { X, Lock, ShieldCheck } from 'lucide-react';
+import { X, Lock, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { useAlert } from '../../../contexts/AlertContext';
 import { authService } from '../../../services/authService';
 
@@ -13,6 +13,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { showAlert } = useAlert();
@@ -69,13 +72,21 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
             <div className="input-with-icon">
               <ShieldCheck size={18} className="input-icon" />
               <input
-                type="password"
+                type={showCurrentPassword ? "text" : "password"}
                 id="currentPassword"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 required
                 placeholder="Digite sua senha atual"
               />
+              <button 
+                type="button" 
+                className="btn-toggle-password" 
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                tabIndex={-1}
+              >
+                {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
@@ -84,13 +95,21 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
             <div className="input-with-icon">
               <Lock size={18} className="input-icon" />
               <input
-                type="password"
+                type={showNewPassword ? "text" : "password"}
                 id="newPassword"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 placeholder="Digite a nova senha"
               />
+              <button 
+                type="button" 
+                className="btn-toggle-password" 
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                tabIndex={-1}
+              >
+                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
@@ -99,13 +118,21 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
             <div className="input-with-icon">
               <Lock size={18} className="input-icon" />
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 placeholder="Repita a nova senha"
               />
+              <button 
+                type="button" 
+                className="btn-toggle-password" 
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

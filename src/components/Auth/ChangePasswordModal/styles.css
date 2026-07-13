@@ -105,6 +105,30 @@
   outline: none;
 }
 
+.btn-toggle-password {
+  position: absolute;
+  right: 30px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.btn-toggle-password:hover {
+  background-color: var(--bg-body);
+  color: var(--primary-color);
+}
+
+.input-with-icon input {
+  padding-right: 2.5rem; /* Make space for the eye icon */
+}
+
 .change-password-modal .modal-footer {
   margin-top: 2rem;
   padding-top: 1.25rem;

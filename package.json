@@ -32,6 +32,14 @@
         }
       ]
     },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "icon": "public/logo-SGD.png"
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
